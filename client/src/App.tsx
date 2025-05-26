@@ -21,6 +21,9 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Dashboard} />
+          <Route path="/community" component={Community} />
+          <Route path="/documentation" component={Documentation} />
+          <Route path="/flights" component={Flights} />
         </>
       )}
       <Route component={NotFound} />

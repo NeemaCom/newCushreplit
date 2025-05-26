@@ -4,6 +4,14 @@ import {
   transactions,
   immigrationCases,
   chatMessages,
+  mentors,
+  mentorSessions,
+  communityEvents,
+  eventRegistrations,
+  insights,
+  documentationServices,
+  documentationOrders,
+  flightBookings,
   type User,
   type UpsertUser,
   type Wallet,
@@ -14,6 +22,21 @@ import {
   type InsertImmigrationCase,
   type ChatMessage,
   type InsertChatMessage,
+  type Mentor,
+  type InsertMentor,
+  type MentorSession,
+  type InsertMentorSession,
+  type CommunityEvent,
+  type InsertEvent,
+  type EventRegistration,
+  type Insight,
+  type InsertInsight,
+  type DocumentationService,
+  type InsertDocService,
+  type DocumentationOrder,
+  type InsertDocOrder,
+  type FlightBooking,
+  type InsertFlightBooking,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -41,6 +64,26 @@ export interface IStorage {
   // Chat message operations
   getUserChatMessages(userId: string, limit?: number): Promise<ChatMessage[]>;
   createChatMessage(chatMessage: InsertChatMessage): Promise<ChatMessage>;
+  
+  // Community operations
+  getMentors(): Promise<Mentor[]>;
+  createMentor(mentor: InsertMentor): Promise<Mentor>;
+  getCommunityEvents(): Promise<CommunityEvent[]>;
+  createEvent(event: InsertEvent): Promise<CommunityEvent>;
+  getInsights(): Promise<Insight[]>;
+  createInsight(insight: InsertInsight): Promise<Insight>;
+  
+  // Documentation operations
+  getDocumentationServices(): Promise<DocumentationService[]>;
+  createDocumentationService(service: InsertDocService): Promise<DocumentationService>;
+  getUserDocumentationOrders(userId: string): Promise<DocumentationOrder[]>;
+  createDocumentationOrder(order: InsertDocOrder): Promise<DocumentationOrder>;
+  updateDocumentationOrder(id: number, updates: Partial<DocumentationOrder>): Promise<DocumentationOrder>;
+  
+  // Flight operations
+  getUserFlightBookings(userId: string): Promise<FlightBooking[]>;
+  createFlightBooking(booking: InsertFlightBooking): Promise<FlightBooking>;
+  updateFlightBooking(id: number, updates: Partial<FlightBooking>): Promise<FlightBooking>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -143,6 +186,108 @@ export class DatabaseStorage implements IStorage {
   async createChatMessage(chatMessage: InsertChatMessage): Promise<ChatMessage> {
     const [newMessage] = await db.insert(chatMessages).values(chatMessage).returning();
     return newMessage;
+  }
+
+  // Community operations
+  async getMentors(): Promise<Mentor[]> {
+    return await db.select().from(mentors).where(eq(mentors.isActive, true));
+  }
+
+  async createMentor(mentor: InsertMentor): Promise<Mentor> {
+    const [newMentor] = await db.insert(mentors).values(mentor).returning();
+    return newMentor;
+  }
+
+  async getCommunityEvents(): Promise<CommunityEvent[]> {
+    return await db.select().from(communityEvents)
+      .where(eq(communityEvents.isActive, true))
+      .orderBy(communityEvents.eventDate);
+  }
+
+  async createEvent(event: InsertEvent): Promise<CommunityEvent> {
+    const [newEvent] = await db.insert(communityEvents).values(event).returning();
+    return newEvent;
+  }
+
+  async getInsights(): Promise<Insight[]> {
+    return await db.select().from(insights)
+      .where(eq(insights.isPublished, true))
+      .orderBy(desc(insights.createdAt));
+  }
+
+  async createInsight(insight: InsertInsight): Promise<Insight> {
+    const [newInsight] = await db.insert(insights).values(insight).returning();
+    return newInsight;
+  }
+
+  // Documentation operations
+  async getDocumentationServices(): Promise<DocumentationService[]> {
+    return await db.select().from(documentationServices)
+      .where(eq(documentationServices.isActive, true));
+  }
+
+  async createDocumentationService(service: InsertDocService): Promise<DocumentationService> {
+    const [newService] = await db.insert(documentationServices).values(service).returning();
+    return newService;
+  }
+
+  async getUserDocumentationOrders(userId: string): Promise<DocumentationOrder[]> {
+    return await db.select({
+      id: documentationOrders.id,
+      userId: documentationOrders.userId,
+      serviceId: documentationOrders.serviceId,
+      orderNumber: documentationOrders.orderNumber,
+      status: documentationOrders.status,
+      amount: documentationOrders.amount,
+      stripePaymentId: documentationOrders.stripePaymentId,
+      deliveryDetails: documentationOrders.deliveryDetails,
+      createdAt: documentationOrders.createdAt,
+      updatedAt: documentationOrders.updatedAt,
+      service: {
+        id: documentationServices.id,
+        name: documentationServices.name,
+        description: documentationServices.description,
+        price: documentationServices.price,
+        processingTime: documentationServices.processingTime,
+      }
+    })
+    .from(documentationOrders)
+    .leftJoin(documentationServices, eq(documentationOrders.serviceId, documentationServices.id))
+    .where(eq(documentationOrders.userId, userId))
+    .orderBy(desc(documentationOrders.createdAt));
+  }
+
+  async createDocumentationOrder(order: InsertDocOrder): Promise<DocumentationOrder> {
+    const [newOrder] = await db.insert(documentationOrders).values(order).returning();
+    return newOrder;
+  }
+
+  async updateDocumentationOrder(id: number, updates: Partial<DocumentationOrder>): Promise<DocumentationOrder> {
+    const [updatedOrder] = await db.update(documentationOrders)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(documentationOrders.id, id))
+      .returning();
+    return updatedOrder;
+  }
+
+  // Flight operations
+  async getUserFlightBookings(userId: string): Promise<FlightBooking[]> {
+    return await db.select().from(flightBookings)
+      .where(eq(flightBookings.userId, userId))
+      .orderBy(desc(flightBookings.createdAt));
+  }
+
+  async createFlightBooking(booking: InsertFlightBooking): Promise<FlightBooking> {
+    const [newBooking] = await db.insert(flightBookings).values(booking).returning();
+    return newBooking;
+  }
+
+  async updateFlightBooking(id: number, updates: Partial<FlightBooking>): Promise<FlightBooking> {
+    const [updatedBooking] = await db.update(flightBookings)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(flightBookings.id, id))
+      .returning();
+    return updatedBooking;
   }
 }
 

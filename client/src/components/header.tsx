@@ -29,17 +29,17 @@ export default function Header() {
             {/* Desktop Navigation */}
             <div className="hidden md:block ml-10">
               <div className="flex items-baseline space-x-8">
-                <a href="#dashboard" className="text-blue-600 font-medium px-3 py-2 text-sm">
+                <a href="/" className="text-blue-600 font-medium px-3 py-2 text-sm">
                   Dashboard
                 </a>
-                <a href="#transfers" className="text-gray-500 hover:text-blue-600 px-3 py-2 text-sm">
-                  Transfers
+                <a href="/community" className="text-gray-500 hover:text-blue-600 px-3 py-2 text-sm">
+                  Community
                 </a>
-                <a href="#wallet" className="text-gray-500 hover:text-blue-600 px-3 py-2 text-sm">
-                  Wallet
+                <a href="/documentation" className="text-gray-500 hover:text-blue-600 px-3 py-2 text-sm">
+                  Documentation
                 </a>
-                <a href="#services" className="text-gray-500 hover:text-blue-600 px-3 py-2 text-sm">
-                  Services
+                <a href="/flights" className="text-gray-500 hover:text-blue-600 px-3 py-2 text-sm">
+                  Flights
                 </a>
                 <a href="#support" className="text-gray-500 hover:text-blue-600 px-3 py-2 text-sm">
                   Support
@@ -103,17 +103,17 @@ export default function Header() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-gray-200">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-white">
-              <a href="#dashboard" className="block px-3 py-2 text-blue-600 font-medium">
+              <a href="/" className="block px-3 py-2 text-blue-600 font-medium">
                 Dashboard
               </a>
-              <a href="#transfers" className="block px-3 py-2 text-gray-500">
-                Transfers
+              <a href="/community" className="block px-3 py-2 text-gray-500">
+                Community
               </a>
-              <a href="#wallet" className="block px-3 py-2 text-gray-500">
-                Wallet
+              <a href="/documentation" className="block px-3 py-2 text-gray-500">
+                Documentation
               </a>
-              <a href="#services" className="block px-3 py-2 text-gray-500">
-                Services
+              <a href="/flights" className="block px-3 py-2 text-gray-500">
+                Flights
               </a>
               <a href="#support" className="block px-3 py-2 text-gray-500">
                 Support
