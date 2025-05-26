@@ -32,6 +32,7 @@ import {
   Clock
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from "recharts";
+import UserProfileModal from "@/components/user-profile-modal";
 
 // Sample chart data - in production this would come from your API
 const balanceData = [
@@ -56,6 +57,7 @@ export default function AdvancedDashboard() {
   const { user } = useAuth();
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [selectedTab, setSelectedTab] = useState("overview");
+  const [showProfileModal, setShowProfileModal] = useState(false);
   
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ["/api/dashboard"],
@@ -180,7 +182,12 @@ export default function AdvancedDashboard() {
                 </div>
                 <div className="text-xs text-cush-gray-600">Premium Member</div>
               </div>
-              <Button variant="ghost" size="sm" className="p-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-1"
+                onClick={() => setShowProfileModal(true)}
+              >
                 <Settings className="w-4 h-4" />
               </Button>
             </div>
@@ -448,6 +455,12 @@ export default function AdvancedDashboard() {
             </Card>
           </div>
         </div>
+
+        {/* User Profile Modal */}
+        <UserProfileModal 
+          isOpen={showProfileModal} 
+          onClose={() => setShowProfileModal(false)} 
+        />
       </div>
     </div>
   );

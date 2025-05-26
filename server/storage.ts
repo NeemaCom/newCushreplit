@@ -84,6 +84,16 @@ export interface IStorage {
   getUserFlightBookings(userId: string): Promise<FlightBooking[]>;
   createFlightBooking(booking: InsertFlightBooking): Promise<FlightBooking>;
   updateFlightBooking(id: number, updates: Partial<FlightBooking>): Promise<FlightBooking>;
+  
+  // Loan operations
+  getUserLoanApplications(userId: string): Promise<LoanApplication[]>;
+  createLoanApplication(application: InsertLoanApplication): Promise<LoanApplication>;
+  updateLoanApplication(id: number, updates: Partial<LoanApplication>): Promise<LoanApplication>;
+  
+  // User profile operations
+  getUserProfile(userId: string): Promise<UserProfile | undefined>;
+  createUserProfile(profile: InsertUserProfile): Promise<UserProfile>;
+  updateUserProfile(userId: string, updates: UpdateUserProfile): Promise<UserProfile>;
 }
 
 export class DatabaseStorage implements IStorage {
