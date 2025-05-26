@@ -31,67 +31,77 @@ export default function QuickStats({ wallets, transactions, immigrationCases }: 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {/* NGN Wallet Balance */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="card-modern p-6 hover:shadow-modern-lg transition-all duration-300">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Wallet Balance</p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-sm font-medium text-cush-gray-600 mb-1">Wallet Balance</p>
+            <p className="text-3xl font-bold text-cush-gray-900">
               {ngnWallet ? formatCurrency(ngnWallet.balance, 'NGN') : '₦0'}
             </p>
-            <p className="text-sm text-emerald-600 mt-1">Available</p>
+            <div className="mt-3 flex items-center">
+              <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+              <span className="text-sm text-cush-gray-600">Available</span>
+            </div>
           </div>
-          <div className="bg-blue-100 p-3 rounded-lg">
-            <Wallet className="text-blue-600 h-6 w-6" />
+          <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <Wallet className="text-white h-7 w-7" />
           </div>
         </div>
       </div>
 
       {/* Active Transfers */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="card-modern p-6 hover:shadow-modern-lg transition-all duration-300">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Active Transfers</p>
-            <p className="text-2xl font-bold text-gray-900">{activeTransfers}</p>
-            <p className="text-sm text-gray-500 mt-1">
-              {activeTransfers > 0 ? `${activeTransfers} pending approval` : 'All completed'}
-            </p>
+            <p className="text-sm font-medium text-cush-gray-600 mb-1">Active Transfers</p>
+            <p className="text-3xl font-bold text-cush-gray-900">{activeTransfers}</p>
+            <div className="mt-3">
+              <span className="text-sm text-cush-gray-600">
+                {activeTransfers > 0 ? `${activeTransfers} pending approval` : 'All completed'}
+              </span>
+            </div>
           </div>
-          <div className="bg-emerald-100 p-3 rounded-lg">
-            <ArrowUpDown className="text-emerald-600 h-6 w-6" />
+          <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <ArrowUpDown className="text-white h-7 w-7" />
           </div>
         </div>
       </div>
 
       {/* GBP Balance */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="card-modern p-6 hover:shadow-modern-lg transition-all duration-300">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">GBP Balance</p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-sm font-medium text-cush-gray-600 mb-1">GBP Balance</p>
+            <p className="text-3xl font-bold text-cush-gray-900">
               {gbpWallet ? formatCurrency(gbpWallet.balance, 'GBP') : '£0'}
             </p>
-            <p className="text-sm text-emerald-600 mt-1">Available</p>
+            <div className="mt-3 flex items-center">
+              <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+              <span className="text-sm text-cush-gray-600">Available</span>
+            </div>
           </div>
-          <div className="bg-purple-100 p-3 rounded-lg">
-            <PoundSterling className="text-purple-600 h-6 w-6" />
+          <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <PoundSterling className="text-white h-7 w-7" />
           </div>
         </div>
       </div>
 
       {/* Immigration Status */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+      <div className="card-modern p-6 hover:shadow-modern-lg transition-all duration-300">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-600">Immigration Status</p>
-            <p className="text-2xl font-bold text-gray-900 capitalize">
+            <p className="text-sm font-medium text-cush-gray-600 mb-1">Immigration Status</p>
+            <p className="text-3xl font-bold text-cush-gray-900 capitalize">
               {activeCase?.status || 'No Cases'}
             </p>
-            <p className="text-sm text-blue-600 mt-1">
-              {activeCase?.caseNumber || 'Create new case'}
-            </p>
+            <div className="mt-3">
+              <span className="text-sm text-cush-primary font-medium">
+                {activeCase?.caseNumber || 'Create new case'}
+              </span>
+            </div>
           </div>
-          <div className="bg-blue-100 p-3 rounded-lg">
-            <FileText className="text-blue-600 h-6 w-6" />
+          <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+            <FileText className="text-white h-7 w-7" />
           </div>
         </div>
       </div>

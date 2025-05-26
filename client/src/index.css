@@ -5,33 +5,52 @@
 :root {
   --background: 0 0% 100%;
   --foreground: 20 14.3% 4.1%;
-  --muted: 60 4.8% 95.9%;
-  --muted-foreground: 25 5.3% 44.7%;
+  --muted: 210 11% 98%;
+  --muted-foreground: 215 16% 47%;
   --popover: 0 0% 100%;
   --popover-foreground: 20 14.3% 4.1%;
   --card: 0 0% 100%;
   --card-foreground: 20 14.3% 4.1%;
-  --border: 20 5.9% 90%;
-  --input: 20 5.9% 90%;
-  --primary: 207 90% 54%; /* Cush Blue */
-  --primary-foreground: 211 100% 99%;
-  --secondary: 60 4.8% 95.9%;
-  --secondary-foreground: 24 9.8% 10%;
-  --accent: 60 4.8% 95.9%;
-  --accent-foreground: 24 9.8% 10%;
+  --border: 214 13% 93%;
+  --input: 214 13% 93%;
+  --primary: 221 83% 53%; /* Modern Cush Blue */
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 40% 98%;
+  --secondary-foreground: 222 84% 5%;
+  --accent: 210 40% 98%;
+  --accent-foreground: 222 84% 5%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 60 9.1% 97.8%;
-  --ring: 20 14.3% 4.1%;
-  --radius: 0.5rem;
+  --ring: 221 83% 53%;
+  --radius: 0.75rem;
   
-  /* Custom Cush colors */
-  --cush-blue: 207 90% 54%; /* #1E40AF equivalent */
-  --cush-emerald: 159 88% 39%; /* #059669 equivalent */
-  --cush-red: 0 73% 48%; /* #DC2626 equivalent */
-  --cush-gray-50: 210 11% 98%; /* #F8FAFC */
-  --cush-gray-100: 210 11% 95%; /* #F1F5F9 */
-  --cush-gray-500: 215 16% 47%; /* #64748B */
-  --cush-gray-900: 221 39% 11%; /* #1E293B */
+  /* Modern Cush design system colors */
+  --cush-primary: 221 83% 53%; /* #2563EB - Modern blue */
+  --cush-primary-50: 219 100% 97%;
+  --cush-primary-100: 220 92% 95%;
+  --cush-primary-500: 221 83% 53%;
+  --cush-primary-600: 221 83% 48%;
+  --cush-primary-700: 221 83% 43%;
+  
+  --cush-success: 142 71% 45%;
+  --cush-warning: 38 92% 50%;
+  --cush-error: 0 84% 60%;
+  
+  --cush-gray-25: 210 11% 99%;
+  --cush-gray-50: 210 11% 98%;
+  --cush-gray-100: 210 11% 95%;
+  --cush-gray-200: 214 13% 93%;
+  --cush-gray-300: 213 10% 88%;
+  --cush-gray-400: 215 16% 65%;
+  --cush-gray-500: 215 16% 47%;
+  --cush-gray-600: 215 19% 35%;
+  --cush-gray-700: 215 25% 27%;
+  --cush-gray-800: 217 33% 17%;
+  --cush-gray-900: 222 84% 5%;
+  
+  /* Gradient backgrounds */
+  --gradient-primary: linear-gradient(135deg, hsl(var(--cush-primary)) 0%, hsl(var(--cush-primary-700)) 100%);
+  --gradient-subtle: linear-gradient(135deg, hsl(var(--cush-gray-25)) 0%, hsl(var(--cush-gray-50)) 100%);
 }
 
 .dark {
@@ -69,27 +88,72 @@
 }
 
 @layer utilities {
-  .cush-blue {
-    color: hsl(var(--cush-blue));
+  /* Modern gradient backgrounds */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
   }
   
-  .bg-cush-blue {
-    background-color: hsl(var(--cush-blue));
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
   }
   
-  .cush-emerald {
-    color: hsl(var(--cush-emerald));
+  /* Enhanced shadows for modern cards */
+  .shadow-modern {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
   }
   
-  .bg-cush-emerald {
-    background-color: hsl(var(--cush-emerald));
+  .shadow-modern-lg {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   }
   
-  .cush-red {
-    color: hsl(var(--cush-red));
+  .shadow-modern-xl {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
   }
   
-  .bg-cush-red {
-    background-color: hsl(var(--cush-red));
+  /* Custom utility classes */
+  .text-cush-primary {
+    color: hsl(var(--cush-primary));
+  }
+  
+  .bg-cush-primary {
+    background-color: hsl(var(--cush-primary));
+  }
+  
+  .bg-cush-primary-50 {
+    background-color: hsl(var(--cush-primary-50));
+  }
+  
+  .bg-cush-gray-25 {
+    background-color: hsl(var(--cush-gray-25));
+  }
+  
+  .bg-cush-gray-50 {
+    background-color: hsl(var(--cush-gray-50));
+  }
+  
+  .text-cush-gray-600 {
+    color: hsl(var(--cush-gray-600));
+  }
+  
+  .text-cush-gray-700 {
+    color: hsl(var(--cush-gray-700));
+  }
+  
+  .text-cush-gray-900 {
+    color: hsl(var(--cush-gray-900));
+  }
+  
+  /* Modern card styling */
+  .card-modern {
+    @apply bg-white rounded-xl shadow-modern border border-gray-100 hover:shadow-modern-lg transition-all duration-200;
+  }
+  
+  .card-feature {
+    @apply bg-white rounded-2xl shadow-modern-lg border-0 hover:shadow-modern-xl transition-all duration-300 hover:-translate-y-1;
+  }
+  
+  /* Button enhancements */
+  .btn-primary-modern {
+    @apply bg-gradient-primary text-white hover:opacity-90 transition-all duration-200 shadow-modern hover:shadow-modern-lg;
   }
 }

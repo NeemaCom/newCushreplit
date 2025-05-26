@@ -38,59 +38,87 @@ export default function Dashboard() {
   const userName = user?.firstName || "User";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-subtle">
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, {userName}!
-          </h2>
-          <p className="text-gray-600">
-            Manage your immigration journey and financial services in one secure platform.
-          </p>
+        {/* Welcome Section with modern styling */}
+        <div className="mb-10">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-cush-gray-900 mb-2">
+                Welcome back, {userName}!
+              </h1>
+              <p className="text-cush-gray-600 text-lg">
+                Manage your immigration journey and financial services in one secure platform.
+              </p>
+            </div>
+            <div className="hidden md:flex items-center space-x-4">
+              <div className="bg-white rounded-2xl px-6 py-3 shadow-modern">
+                <div className="flex items-center space-x-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm font-medium text-cush-gray-700">System Operational</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* Enhanced Quick Stats */}
         <QuickStats 
           wallets={wallets}
           transactions={transactions}
           immigrationCases={immigrationCases}
         />
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Main Content Grid with improved spacing */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-8">
             <TransferForm wallets={wallets} />
             <TransactionList transactions={transactions} />
           </div>
 
-          {/* Right Column */}
-          <div className="space-y-8">
+          {/* Right Column with modern cards */}
+          <div className="space-y-6">
             <ImmigrationServices />
             <AIAssistant />
             
-            {/* Quick Links */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-              <div className="space-y-3">
-                <a href="#profile" className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                  <i className="fas fa-user text-gray-500"></i>
-                  <span className="text-gray-700">Update Profile</span>
+            {/* Enhanced Quick Actions */}
+            <div className="card-modern p-6">
+              <h3 className="text-lg font-semibold text-cush-gray-900 mb-5">Quick Actions</h3>
+              <div className="space-y-2">
+                <a href="#profile" className="flex items-center space-x-3 p-4 hover:bg-cush-gray-25 rounded-xl transition-all duration-200 group">
+                  <div className="w-10 h-10 bg-cush-primary-50 rounded-lg flex items-center justify-center group-hover:bg-cush-primary group-hover:text-white transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <span className="font-medium text-cush-gray-700 group-hover:text-cush-gray-900">Update Profile</span>
                 </a>
-                <a href="#documents" className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                  <i className="fas fa-file-alt text-gray-500"></i>
-                  <span className="text-gray-700">Upload Documents</span>
+                <a href="/documentation" className="flex items-center space-x-3 p-4 hover:bg-cush-gray-25 rounded-xl transition-all duration-200 group">
+                  <div className="w-10 h-10 bg-cush-primary-50 rounded-lg flex items-center justify-center group-hover:bg-cush-primary group-hover:text-white transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                  </div>
+                  <span className="font-medium text-cush-gray-700 group-hover:text-cush-gray-900">Documentation</span>
                 </a>
-                <a href="#support" className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                  <i className="fas fa-headset text-gray-500"></i>
-                  <span className="text-gray-700">Contact Support</span>
+                <a href="/community" className="flex items-center space-x-3 p-4 hover:bg-cush-gray-25 rounded-xl transition-all duration-200 group">
+                  <div className="w-10 h-10 bg-cush-primary-50 rounded-lg flex items-center justify-center group-hover:bg-cush-primary group-hover:text-white transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <span className="font-medium text-cush-gray-700 group-hover:text-cush-gray-900">Community</span>
                 </a>
-                <a href="#security" className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                  <i className="fas fa-shield-alt text-gray-500"></i>
-                  <span className="text-gray-700">Security Settings</span>
+                <a href="#security" className="flex items-center space-x-3 p-4 hover:bg-cush-gray-25 rounded-xl transition-all duration-200 group">
+                  <div className="w-10 h-10 bg-cush-primary-50 rounded-lg flex items-center justify-center group-hover:bg-cush-primary group-hover:text-white transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <span className="font-medium text-cush-gray-700 group-hover:text-cush-gray-900">Security Settings</span>
                 </a>
               </div>
             </div>
