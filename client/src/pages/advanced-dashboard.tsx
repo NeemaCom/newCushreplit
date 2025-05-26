@@ -29,7 +29,9 @@ import {
   Building,
   Percent,
   MapPin,
-  Clock
+  Clock,
+  LogOut,
+  Power
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from "recharts";
 import UserProfileModal from "@/components/user-profile-modal";
@@ -58,6 +60,11 @@ export default function AdvancedDashboard() {
   const [balanceVisible, setBalanceVisible] = useState(true);
   const [selectedTab, setSelectedTab] = useState("overview");
   const [showProfileModal, setShowProfileModal] = useState(false);
+
+  const handleLogout = () => {
+    // Redirect to logout endpoint
+    window.location.href = '/api/logout';
+  };
   
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ["/api/dashboard"],
@@ -169,26 +176,38 @@ export default function AdvancedDashboard() {
 
           {/* User Profile Section */}
           <div className="absolute bottom-0 w-full p-4 border-t border-cush-gray-200">
-            <div className="flex items-center space-x-3 p-3 bg-cush-gray-25 rounded-xl">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={user?.profileImageUrl} />
-                <AvatarFallback className="bg-gradient-primary text-white font-bold">
-                  {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-cush-gray-900 truncate">
-                  {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'User Account'}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 p-3 bg-cush-gray-25 rounded-xl">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={user?.profileImageUrl} />
+                  <AvatarFallback className="bg-gradient-primary text-white font-bold">
+                    {user?.firstName?.[0] || 'U'}{user?.lastName?.[0] || ''}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-cush-gray-900 truncate">
+                    {user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : 'User Account'}
+                  </div>
+                  <div className="text-xs text-cush-gray-600">Premium Member</div>
                 </div>
-                <div className="text-xs text-cush-gray-600">Premium Member</div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-1"
+                  onClick={() => setShowProfileModal(true)}
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
               </div>
+              
+              {/* Logout Button */}
               <Button 
-                variant="ghost" 
-                size="sm" 
-                className="p-1"
-                onClick={() => setShowProfileModal(true)}
+                onClick={handleLogout}
+                variant="outline" 
+                className="w-full border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 transition-all duration-200"
               >
-                <Settings className="w-4 h-4" />
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
               </Button>
             </div>
           </div>
