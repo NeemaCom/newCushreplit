@@ -10,6 +10,9 @@ import Dashboard from "@/pages/dashboard";
 import Community from "@/pages/community";
 import Documentation from "@/pages/documentation";
 import Flights from "@/pages/flights";
+import Mentors from "@/pages/mentors";
+import Events from "@/pages/events";
+import Insights from "@/pages/insights";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -24,6 +27,9 @@ function Router() {
           <Route path="/community" component={Community} />
           <Route path="/documentation" component={Documentation} />
           <Route path="/flights" component={Flights} />
+          <Route path="/mentors" component={Mentors} />
+          <Route path="/events" component={Events} />
+          <Route path="/insights" component={Insights} />
         </>
       )}
       <Route component={NotFound} />

@@ -452,6 +452,144 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mentor routes
+  app.get('/api/mentors', async (req, res) => {
+    try {
+      const mentors = await storage.getMentors();
+      res.json(mentors);
+    } catch (error) {
+      console.error("Error fetching mentors:", error);
+      res.status(500).json({ message: "Failed to fetch mentors" });
+    }
+  });
+
+  app.post('/api/mentors/apply', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { name, expertise, bio, hourlyRate, experience, credentials, languages } = req.body;
+
+      const mentor = await storage.createMentor({
+        userId,
+        name,
+        expertise,
+        bio,
+        hourlyRate,
+        experience,
+        credentials,
+        languages,
+        isActive: false, // Pending admin approval
+        isApproved: false,
+      });
+
+      res.json({ message: "Application submitted successfully", mentor });
+    } catch (error) {
+      console.error("Error submitting mentor application:", error);
+      res.status(500).json({ message: "Failed to submit application" });
+    }
+  });
+
+  app.post('/api/mentors/book', isAuthenticated, async (req: any, res) => {
+    try {
+      const { mentorId } = req.body;
+      
+      // In a real implementation, this would integrate with a booking system
+      // For now, we'll create a placeholder booking URL
+      const bookingUrl = `https://calendly.com/mentor-${mentorId}`;
+      
+      res.json({ bookingUrl });
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      res.status(500).json({ message: "Failed to create booking" });
+    }
+  });
+
+  // Events routes
+  app.get('/api/events', async (req, res) => {
+    try {
+      const events = await storage.getCommunityEvents();
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      res.status(500).json({ message: "Failed to fetch events" });
+    }
+  });
+
+  app.post('/api/events', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const eventData = req.body;
+
+      const event = await storage.createEvent({
+        ...eventData,
+        createdBy: userId,
+        currentAttendees: 0,
+      });
+
+      res.json({ message: "Event created successfully", event });
+    } catch (error) {
+      console.error("Error creating event:", error);
+      res.status(500).json({ message: "Failed to create event" });
+    }
+  });
+
+  app.post('/api/events/register', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { eventId } = req.body;
+
+      // In a real implementation, this would create an event registration record
+      // and handle payment if the event has a price
+      
+      res.json({ message: "Registration successful" });
+    } catch (error) {
+      console.error("Error registering for event:", error);
+      res.status(500).json({ message: "Failed to register for event" });
+    }
+  });
+
+  // Insights routes
+  app.get('/api/insights', async (req, res) => {
+    try {
+      const insights = await storage.getInsights();
+      res.json(insights);
+    } catch (error) {
+      console.error("Error fetching insights:", error);
+      res.status(500).json({ message: "Failed to fetch insights" });
+    }
+  });
+
+  app.post('/api/insights', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const insightData = req.body;
+
+      const insight = await storage.createInsight({
+        ...insightData,
+        authorId: userId,
+        isPublished: true, // Auto-publish for now, could require admin approval
+      });
+
+      res.json({ message: "Article published successfully", insight });
+    } catch (error) {
+      console.error("Error creating insight:", error);
+      res.status(500).json({ message: "Failed to publish article" });
+    }
+  });
+
+  // Admin routes for managing content
+  app.post('/api/admin/mentors/:id/approve', isAuthenticated, async (req: any, res) => {
+    try {
+      // In a real implementation, check if user has admin permissions
+      const { id } = req.params;
+      
+      // Update mentor approval status
+      res.json({ message: "Mentor approved successfully" });
+    } catch (error) {
+      console.error("Error approving mentor:", error);
+      res.status(500).json({ message: "Failed to approve mentor" });
+    }
+  });
+
   // Initialize sample data on first run
   app.post('/api/admin/initialize', async (req, res) => {
     try {

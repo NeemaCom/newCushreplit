@@ -46,8 +46,14 @@ export default function Header() {
                 <a href="/flights" className="text-cush-gray-700 hover:text-cush-primary hover:bg-cush-gray-25 px-4 py-3 text-sm rounded-xl transition-all duration-200">
                   Flights
                 </a>
-                <a href="#support" className="text-cush-gray-700 hover:text-cush-primary hover:bg-cush-gray-25 px-4 py-3 text-sm rounded-xl transition-all duration-200">
-                  Support
+                <a href="/mentors" className="text-cush-gray-700 hover:text-cush-primary hover:bg-cush-gray-25 px-4 py-3 text-sm rounded-xl transition-all duration-200">
+                  Mentors
+                </a>
+                <a href="/events" className="text-cush-gray-700 hover:text-cush-primary hover:bg-cush-gray-25 px-4 py-3 text-sm rounded-xl transition-all duration-200">
+                  Events
+                </a>
+                <a href="/insights" className="text-cush-gray-700 hover:text-cush-primary hover:bg-cush-gray-25 px-4 py-3 text-sm rounded-xl transition-all duration-200">
+                  Insights
                 </a>
               </div>
             </div>
