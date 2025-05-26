@@ -1,0 +1,43 @@
+Design and build a secure, scalable, and user-friendly web platform for Cush, a global immigration services provider. Prioritize enterprise-grade security, robust data integrity, and an intuitive user experience. The platform must support multiple user roles, international financial transactions, and integrate advanced AI capabilities.
+
+Core Requirements:
+Platform Purpose: Establish Cush as the leading digital platform for global immigration services, encompassing mentorship, advisory, remittances, and loans.
+
+Security First (Non-Negotiable):
+
+Implement industry best practices for data encryption (at rest and in transit) using strong cryptographic standards (e.g., AES-256, TLS 1.3).
+Utilize a robust authentication and authorization system (e.g., OAuth 2.0, multi-factor authentication (MFA) by default for all user types, especially admins).
+Integrate comprehensive input validation and sanitization to prevent common web vulnerabilities (e.g., XSS, SQL injection).
+Implement strict access controls based on the principle of least privilege for all user roles.
+Ensure regular security audits, penetration testing readiness, and adherence to relevant data protection regulations (e.g., GDPR, CCPA).
+Implement a Web Application Firewall (WAF) and DDoS protection.
+Adopt a secure by design approach, meaning security considerations are embedded at every stage of development.
+User Management:
+
+User Roles:
+Admin: Full control over content, user management, transaction monitoring, and system configuration.
+Customers: Access to their profiles, service requests, payment history, virtual wallets, and the AI chatbot.
+Account Features: Secure registration process, profile management (including personal details, immigration status, service preferences), and robust account recovery mechanisms.
+Financial Transactions:
+
+Transfers: Enable secure money transfers from Nigeria (NGN) to UK Pounds Sterling (GBP).
+Payment Gateway Integration: Seamlessly integrate with Stripe for all payment processing, ensuring compliance with PCI DSS standards.
+Virtual Wallets: Implement a secure virtual wallet system for customers to hold funds, receive remittances, and manage loan disbursements. Ensure clear audit trails for all wallet transactions.
+Key Features:
+
+Registration: Streamlined and secure onboarding for new users.
+Profiles: Comprehensive and customizable user profiles for both customers and administrators.
+Payments: Intuitive interface for initiating and tracking payments and transfers.
+Imisi 2.0 Integration: Seamlessly embed Imisi 2.0 (our AI-powered migration chatbot helper, powered by Gemini) directly into the platform, providing real-time assistance and information. The chatbot should be accessible from key user journey points.
+Non-Functional Requirements:
+Scalability: The architecture must support rapid growth in user base and transaction volume without performance degradation.
+Reliability: High availability and fault tolerance are critical, ensuring minimal downtime.
+Performance: Fast loading times and responsive interactions across all devices.
+Compliance: Adherence to international financial regulations and immigration laws.
+Localization: Capability for future expansion to support multiple languages and currencies.
+Observability: Implement robust logging, monitoring, and alerting systems to ensure operational visibility and rapid incident response.
+Technical & Architectural Considerations:
+Utilize a modern, well-supported technology stack (e.g., React/Next.js for frontend, Node.js/Python for backend with a microservices architecture, cloud-native deployments on AWS/Azure/GCP).
+Employ infrastructure as code (IaC) for consistent and secure environment provisioning.
+Implement continuous integration/continuous deployment (CI/CD) pipelines with integrated security checks.
+Design for loose coupling and high cohesion to facilitate future feature development and maintenance.
