@@ -210,6 +210,55 @@ export class DatabaseStorage implements IStorage {
     return newMessage;
   }
 
+  // Virtual Card operations
+  async getUserVirtualCards(userId: string): Promise<VirtualCard[]> {
+    return await db
+      .select()
+      .from(virtualCards)
+      .where(eq(virtualCards.userId, userId))
+      .orderBy(desc(virtualCards.createdAt));
+  }
+
+  async getVirtualCardsByWallet(walletId: number): Promise<VirtualCard[]> {
+    return await db
+      .select()
+      .from(virtualCards)
+      .where(eq(virtualCards.walletId, walletId))
+      .orderBy(desc(virtualCards.createdAt));
+  }
+
+  async createVirtualCard(virtualCard: InsertVirtualCard): Promise<VirtualCard> {
+    const [newCard] = await db.insert(virtualCards).values(virtualCard).returning();
+    return newCard;
+  }
+
+  async updateVirtualCard(id: number, updates: UpdateVirtualCard): Promise<VirtualCard> {
+    const [updatedCard] = await db
+      .update(virtualCards)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(virtualCards.id, id))
+      .returning();
+    return updatedCard;
+  }
+
+  async suspendVirtualCard(id: number): Promise<VirtualCard> {
+    const [suspendedCard] = await db
+      .update(virtualCards)
+      .set({ status: 'suspended', updatedAt: new Date() })
+      .where(eq(virtualCards.id, id))
+      .returning();
+    return suspendedCard;
+  }
+
+  async activateVirtualCard(id: number): Promise<VirtualCard> {
+    const [activatedCard] = await db
+      .update(virtualCards)
+      .set({ status: 'active', updatedAt: new Date() })
+      .where(eq(virtualCards.id, id))
+      .returning();
+    return activatedCard;
+  }
+
   // Community operations
   async getMentors(): Promise<Mentor[]> {
     return await db.select().from(mentors).where(eq(mentors.isActive, true));

@@ -189,6 +189,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Wallet endpoints
+  app.get('/api/wallets', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const wallets = await storage.getUserWallets(userId);
+      res.json(wallets);
+    } catch (error) {
+      console.error("Error fetching wallets:", error);
+      res.status(500).json({ message: "Failed to fetch wallets" });
+    }
+  });
+
+  app.post('/api/wallets', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { currency } = req.body;
+      
+      // Check if wallet already exists for this currency
+      const existingWallet = await storage.getWalletByCurrency(userId, currency);
+      if (existingWallet) {
+        return res.status(400).json({ message: "Wallet already exists for this currency" });
+      }
+
+      const wallet = await storage.createWallet({
+        userId,
+        currency,
+        balance: '0.00',
+        isActive: true
+      });
+      
+      res.json(wallet);
+    } catch (error) {
+      console.error("Error creating wallet:", error);
+      res.status(500).json({ message: "Failed to create wallet" });
+    }
+  });
+
+  // Virtual Card endpoints
+  app.get('/api/virtual-cards', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const cards = await storage.getUserVirtualCards(userId);
+      res.json(cards);
+    } catch (error) {
+      console.error("Error fetching virtual cards:", error);
+      res.status(500).json({ message: "Failed to fetch virtual cards" });
+    }
+  });
+
+  app.post('/api/virtual-cards', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { walletId } = req.body;
+      
+      // Get wallet to verify ownership and get currency
+      const wallets = await storage.getUserWallets(userId);
+      const wallet = wallets.find(w => w.id === walletId);
+      
+      if (!wallet) {
+        return res.status(404).json({ message: "Wallet not found" });
+      }
+
+      // Generate card details
+      const cardNumber = '4532' + Math.floor(Math.random() * 1000000000000).toString().padStart(12, '0');
+      const expiryMonth = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+      const expiryYear = String(new Date().getFullYear() + 3).slice(-2);
+      const cvv = Math.floor(Math.random() * 900 + 100).toString();
+
+      const card = await storage.createVirtualCard({
+        userId,
+        walletId,
+        cardNumber,
+        expiryMonth,
+        expiryYear,
+        cvv,
+        cardHolderName: 'CUSH USER',
+        status: 'active',
+        spendingLimit: '5000.00',
+        currency: wallet.currency
+      });
+      
+      res.json(card);
+    } catch (error) {
+      console.error("Error creating virtual card:", error);
+      res.status(500).json({ message: "Failed to create virtual card" });
+    }
+  });
+
+  app.patch('/api/virtual-cards/:cardId/suspend', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const cardId = parseInt(req.params.cardId);
+      
+      // Verify card ownership
+      const cards = await storage.getUserVirtualCards(userId);
+      const card = cards.find(c => c.id === cardId);
+      
+      if (!card) {
+        return res.status(404).json({ message: "Card not found" });
+      }
+
+      const updatedCard = await storage.suspendVirtualCard(cardId);
+      res.json(updatedCard);
+    } catch (error) {
+      console.error("Error suspending card:", error);
+      res.status(500).json({ message: "Failed to suspend card" });
+    }
+  });
+
+  app.patch('/api/virtual-cards/:cardId/activate', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const cardId = parseInt(req.params.cardId);
+      
+      // Verify card ownership
+      const cards = await storage.getUserVirtualCards(userId);
+      const card = cards.find(c => c.id === cardId);
+      
+      if (!card) {
+        return res.status(404).json({ message: "Card not found" });
+      }
+
+      const updatedCard = await storage.activateVirtualCard(cardId);
+      res.json(updatedCard);
+    } catch (error) {
+      console.error("Error activating card:", error);
+      res.status(500).json({ message: "Failed to activate card" });
+    }
+  });
+
   // Transfer money endpoint
   app.post('/api/transfer', isAuthenticated, async (req: any, res) => {
     try {
