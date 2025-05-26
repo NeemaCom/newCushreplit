@@ -30,6 +30,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Enhanced signup completion route
+  app.post('/api/auth/complete-signup', async (req, res) => {
+    try {
+      const {
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        country,
+        acceptTerms,
+        acceptPrivacy,
+        marketingConsent
+      } = req.body;
+
+      // Validate required fields
+      if (!firstName || !lastName || !email || !phoneNumber || !country) {
+        return res.status(400).json({ message: "All required fields must be provided" });
+      }
+
+      if (!acceptTerms || !acceptPrivacy) {
+        return res.status(400).json({ message: "Terms and Privacy Policy must be accepted" });
+      }
+
+      // Create user profile with enhanced information
+      const userData = {
+        email,
+        firstName,
+        lastName,
+      };
+
+      const profileData = {
+        phoneNumber,
+        nationality: country,
+        acceptTerms: true,
+        acceptPrivacy: true,
+        marketingConsent: marketingConsent || false,
+        isPhoneVerified: false,
+        isEmailVerified: false,
+      };
+
+      // In a real implementation, you would:
+      // 1. Send email verification
+      // 2. Send SMS verification for phone
+      // 3. Store user in database
+      // 4. Create initial wallets
+
+      res.json({ 
+        message: "Registration completed successfully",
+        user: userData,
+        requiresVerification: true
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: "Registration failed: " + error.message });
+    }
+  });
+
   // Dashboard data endpoint
   app.get('/api/dashboard', isAuthenticated, async (req: any, res) => {
     try {

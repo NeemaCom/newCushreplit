@@ -1,10 +1,23 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Globe, Zap, Users } from "lucide-react";
+import { Shield, Globe, Zap, Users, UserPlus } from "lucide-react";
+import EnhancedSignupModal from "@/components/enhanced-signup-modal";
 
 export default function Landing() {
+  const [showSignupModal, setShowSignupModal] = useState(false);
+
   const handleLogin = () => {
     window.location.href = '/api/login';
+  };
+
+  const handleSignup = () => {
+    setShowSignupModal(true);
+  };
+
+  const handleSignupComplete = () => {
+    // Redirect to dashboard after successful signup
+    window.location.href = '/';
   };
 
   return (
@@ -16,9 +29,15 @@ export default function Landing() {
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-blue-600">Cush</h1>
             </div>
-            <Button onClick={handleLogin} className="bg-blue-600 hover:bg-blue-700">
-              Sign In
-            </Button>
+            <div className="flex items-center space-x-3">
+              <Button variant="outline" onClick={handleLogin} className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                Sign In
+              </Button>
+              <Button onClick={handleSignup} className="bg-blue-600 hover:bg-blue-700">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Get Started
+              </Button>
+            </div>
           </div>
         </nav>
       </header>
@@ -157,6 +176,12 @@ export default function Landing() {
           </div>
         </div>
       </footer>
+      {/* Enhanced Signup Modal */}
+      <EnhancedSignupModal 
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        onComplete={handleSignupComplete}
+      />
     </div>
   );
 }
