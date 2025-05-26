@@ -6,13 +6,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
-import Dashboard from "@/pages/dashboard";
+import Dashboard from "@/pages/advanced-dashboard";
 import Community from "@/pages/community";
 import Documentation from "@/pages/documentation";
 import Flights from "@/pages/flights";
 import Mentors from "@/pages/mentors";
 import Events from "@/pages/events";
 import Insights from "@/pages/insights";
+import Loans from "@/pages/loans";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -30,6 +31,7 @@ function Router() {
           <Route path="/mentors" component={Mentors} />
           <Route path="/events" component={Events} />
           <Route path="/insights" component={Insights} />
+          <Route path="/loans" component={Loans} />
         </>
       )}
       <Route component={NotFound} />
