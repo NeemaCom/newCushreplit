@@ -86,6 +86,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Gmail OAuth route
+  app.get('/api/auth/gmail', (req, res) => {
+    // For now, redirect to the enhanced signup modal
+    // In production, this would initiate Google OAuth flow
+    res.redirect('/?signup=gmail');
+  });
+
   // Dashboard data endpoint
   app.get('/api/dashboard', isAuthenticated, async (req: any, res) => {
     try {

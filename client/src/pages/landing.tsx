@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -30,11 +30,25 @@ export default function Landing() {
   const [currentMentor, setCurrentMentor] = useState(0);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
+  // Check for Gmail signup parameter
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('signup') === 'gmail') {
+      setShowSignupModal(true);
+    }
+  }, []);
+
   const handleLogin = () => {
     window.location.href = '/api/login';
   };
 
   const handleSignup = () => {
+    setShowSignupModal(true);
+  };
+
+  const handleGmailSignup = () => {
+    // For production, you would integrate with Google OAuth
+    // For now, open the signup modal with Gmail pre-selected
     setShowSignupModal(true);
   };
 
