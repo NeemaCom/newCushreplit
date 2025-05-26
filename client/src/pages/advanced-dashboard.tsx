@@ -128,57 +128,91 @@ export default function AdvancedDashboard() {
           </div>
 
           {/* Navigation Menu */}
-          <nav className="p-4 space-y-2">
-            <div className="text-xs font-semibold text-cush-gray-500 uppercase tracking-wider mb-4">Main Menu</div>
-            
-            <a href="/" className="flex items-center space-x-3 px-4 py-3 bg-cush-primary-50 text-cush-primary rounded-xl font-medium transition-all duration-200">
-              <BarChart3 className="w-5 h-5" />
-              <span>Dashboard</span>
-            </a>
-            
-            <a href="/community" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
-              <Users className="w-5 h-5" />
-              <span>Community</span>
-            </a>
-            
-            <a href="/documentation" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
-              <FileText className="w-5 h-5" />
-              <span>Documentation</span>
-            </a>
-            
-            <a href="/flights" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
-              <MapPin className="w-5 h-5" />
-              <span>Flights</span>
-            </a>
-            
-            <div className="text-xs font-semibold text-cush-gray-500 uppercase tracking-wider mb-4 mt-8">Services</div>
-            
-            <a href="/mentors" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
-              <Users className="w-5 h-5" />
-              <span>Mentors</span>
-            </a>
-            
-            <a href="/events" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
-              <Calendar className="w-5 h-5" />
-              <span>Events</span>
-            </a>
-            
-            <a href="/insights" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
-              <FileText className="w-5 h-5" />
-              <span>Insights</span>
-            </a>
-            
-            <a href="/loans" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
-              <Building className="w-5 h-5" />
-              <span>Loans</span>
-              <Badge className="bg-green-100 text-green-800 text-xs">New</Badge>
-            </a>
-            
-            <a href="/imisi" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
-              <MessageCircle className="w-5 h-5" />
-              <span>Imisi</span>
-              <Badge className="bg-blue-100 text-blue-800 text-xs">AI</Badge>
-            </a>
+          <nav className="p-4 space-y-1 overflow-y-auto flex-1">
+            {/* Main Menu Section */}
+            <div className="mb-6">
+              <div className="text-xs font-semibold text-cush-gray-500 uppercase tracking-wider mb-3 px-3">Overview</div>
+              
+              <a href="/" className="flex items-center justify-between px-3 py-2.5 bg-cush-primary-50 text-cush-primary rounded-lg font-medium transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <BarChart3 className="w-5 h-5" />
+                  <span>Dashboard</span>
+                </div>
+              </a>
+            </div>
+
+            {/* Financial Services Section */}
+            <div className="mb-6">
+              <div className="text-xs font-semibold text-cush-gray-500 uppercase tracking-wider mb-3 px-3">Financial</div>
+              
+              <a href="/loans" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <Building className="w-5 h-5" />
+                  <span>Loans</span>
+                </div>
+                <Badge className="bg-green-100 text-green-800 text-xs px-2 py-1">New</Badge>
+              </a>
+              
+              <a href="/flights" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <MapPin className="w-5 h-5" />
+                  <span>Flight Booking</span>
+                </div>
+              </a>
+            </div>
+
+            {/* Immigration Services Section */}
+            <div className="mb-6">
+              <div className="text-xs font-semibold text-cush-gray-500 uppercase tracking-wider mb-3 px-3">Immigration</div>
+              
+              <a href="/documentation" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <FileText className="w-5 h-5" />
+                  <span>Documentation</span>
+                </div>
+              </a>
+              
+              <a href="/imisi" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <MessageCircle className="w-5 h-5" />
+                  <span>AI Assistant</span>
+                </div>
+                <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-1">AI</Badge>
+              </a>
+            </div>
+
+            {/* Community Section */}
+            <div className="mb-6">
+              <div className="text-xs font-semibold text-cush-gray-500 uppercase tracking-wider mb-3 px-3">Community</div>
+              
+              <a href="/community" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <Users className="w-5 h-5" />
+                  <span>Community Hub</span>
+                </div>
+              </a>
+              
+              <a href="/mentors" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <Users className="w-5 h-5" />
+                  <span>Mentors</span>
+                </div>
+              </a>
+              
+              <a href="/events" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <Calendar className="w-5 h-5" />
+                  <span>Events</span>
+                </div>
+              </a>
+              
+              <a href="/insights" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <FileText className="w-5 h-5" />
+                  <span>Insights</span>
+                </div>
+              </a>
+            </div>
           </nav>
 
           {/* User Profile Section */}
