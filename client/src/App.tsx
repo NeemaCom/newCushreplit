@@ -15,6 +15,7 @@ import Events from "@/pages/events";
 import Insights from "@/pages/insights";
 import Loans from "@/pages/loans";
 import AdminDashboard from "@/pages/admin-dashboard";
+import Imisi from "@/pages/imisi";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -33,6 +34,7 @@ function Router() {
           <Route path="/events" component={Events} />
           <Route path="/insights" component={Insights} />
           <Route path="/loans" component={Loans} />
+          <Route path="/imisi" component={Imisi} />
           <Route path="/admin" component={AdminDashboard} />
         </>
       )}

@@ -31,7 +31,8 @@ import {
   MapPin,
   Clock,
   LogOut,
-  Power
+  Power,
+  MessageCircle
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, BarChart, Bar } from "recharts";
 import UserProfileModal from "@/components/user-profile-modal";
@@ -167,10 +168,16 @@ export default function AdvancedDashboard() {
               <span>Insights</span>
             </a>
             
-            <a href="#loans" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
+            <a href="/loans" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
               <Building className="w-5 h-5" />
               <span>Loans</span>
               <Badge className="bg-green-100 text-green-800 text-xs">New</Badge>
+            </a>
+            
+            <a href="/imisi" className="flex items-center space-x-3 px-4 py-3 text-cush-gray-700 hover:bg-cush-gray-25 rounded-xl transition-all duration-200">
+              <MessageCircle className="w-5 h-5" />
+              <span>Imisi</span>
+              <Badge className="bg-blue-100 text-blue-800 text-xs">AI</Badge>
             </a>
           </nav>
 

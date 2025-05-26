@@ -93,6 +93,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.redirect('/?signup=gmail');
   });
 
+  // Imisi AI Chat endpoint
+  app.post('/api/imisi/chat', isAuthenticated, async (req: any, res) => {
+    try {
+      const { message, conversationHistory } = req.body;
+      const userId = req.user.claims.sub;
+      
+      // Get user context for personalized responses
+      const user = await storage.getUser(userId);
+      const userWallets = await storage.getUserWallets(userId);
+      const recentTransactions = await storage.getUserTransactions(userId, 5);
+      
+      const userContext = {
+        name: user?.firstName || 'User',
+        wallets: userWallets,
+        recentTransactions: recentTransactions
+      };
+
+      // Get AI response from OpenAI service
+      const aiResponse = await getImmigrationAssistance(message, userContext);
+      
+      // Store the conversation in database
+      await storage.createChatMessage({
+        userId,
+        message,
+        response: aiResponse,
+        isFromUser: true
+      });
+
+      await storage.createChatMessage({
+        userId,
+        message: aiResponse,
+        response: '',
+        isFromUser: false
+      });
+
+      res.json({ response: aiResponse });
+    } catch (error: any) {
+      console.error('Imisi chat error:', error);
+      res.status(500).json({ 
+        response: "I apologize, but I'm experiencing some technical difficulties right now. Please try again in a moment, or contact our support team if the issue persists."
+      });
+    }
+  });
+
   // Dashboard data endpoint
   app.get('/api/dashboard', isAuthenticated, async (req: any, res) => {
     try {
