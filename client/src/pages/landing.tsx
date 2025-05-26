@@ -1,11 +1,34 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Globe, Zap, Users, UserPlus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  Shield, 
+  Globe, 
+  Zap, 
+  Users, 
+  UserPlus, 
+  Star, 
+  Quote, 
+  ChevronLeft, 
+  ChevronRight,
+  Mail,
+  Phone,
+  MapPin,
+  Send,
+  CheckCircle,
+  Award,
+  Clock,
+  MessageCircle
+} from "lucide-react";
 import EnhancedSignupModal from "@/components/enhanced-signup-modal";
 
 export default function Landing() {
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [currentMentor, setCurrentMentor] = useState(0);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   const handleLogin = () => {
     window.location.href = '/api/login';
@@ -19,6 +42,59 @@ export default function Landing() {
     // Redirect to dashboard after successful signup
     window.location.href = '/';
   };
+
+  // Sample mentors data
+  const mentors = [
+    {
+      name: "Sarah Johnson",
+      expertise: "UK Immigration Law",
+      image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face",
+      rating: 4.9,
+      clients: 200,
+      description: "Specialist in UK visa applications and settlement routes"
+    },
+    {
+      name: "Michael Adebayo",
+      expertise: "Nigerian Financial Services",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
+      rating: 4.8,
+      clients: 150,
+      description: "Expert in cross-border financial planning and investments"
+    },
+    {
+      name: "Emma Thompson",
+      expertise: "Business Immigration",
+      image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
+      rating: 4.9,
+      clients: 180,
+      description: "Helping entrepreneurs establish businesses internationally"
+    }
+  ];
+
+  // Sample testimonials data
+  const testimonials = [
+    {
+      name: "David Okafor",
+      location: "Lagos to London",
+      rating: 5,
+      text: "Cush made my visa application process so smooth. The financial support and guidance were exceptional.",
+      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face"
+    },
+    {
+      name: "Jennifer Smith",
+      location: "Manchester to Abuja",
+      rating: 5,
+      text: "Excellent service for international transfers. Fast, secure, and reliable every time.",
+      image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=face"
+    },
+    {
+      name: "Ahmed Hassan",
+      location: "Birmingham to Port Harcourt",
+      rating: 5,
+      text: "The loan service helped me start my business. Professional team with great support.",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face"
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
