@@ -85,12 +85,180 @@ export const chatMessages = pgTable("chat_messages", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Mentors table for community section
+export const mentors = pgTable("mentors", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  expertise: varchar("expertise").notNull(),
+  bio: text("bio"),
+  profileImage: varchar("profile_image"),
+  rating: decimal("rating", { precision: 3, scale: 2 }).default("5.00"),
+  hourlyRate: decimal("hourly_rate", { precision: 10, scale: 2 }).notNull(),
+  availability: jsonb("availability").default("{}"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Mentor sessions table
+export const mentorSessions = pgTable("mentor_sessions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  mentorId: integer("mentor_id").notNull().references(() => mentors.id),
+  sessionDate: timestamp("session_date").notNull(),
+  duration: integer("duration").notNull().default(60), // minutes
+  status: varchar("status").notNull().default("scheduled"), // scheduled, completed, cancelled
+  meetingLink: varchar("meeting_link"),
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Community events table
+export const communityEvents = pgTable("community_events", {
+  id: serial("id").primaryKey(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  eventDate: timestamp("event_date").notNull(),
+  location: varchar("location"),
+  isVirtual: boolean("is_virtual").default(true),
+  meetingLink: varchar("meeting_link"),
+  maxAttendees: integer("max_attendees"),
+  currentAttendees: integer("current_attendees").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Event registrations table
+export const eventRegistrations = pgTable("event_registrations", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  eventId: integer("event_id").notNull().references(() => communityEvents.id),
+  registeredAt: timestamp("registered_at").defaultNow(),
+});
+
+// Insights/articles table
+export const insights = pgTable("insights", {
+  id: serial("id").primaryKey(),
+  title: varchar("title").notNull(),
+  content: text("content").notNull(),
+  excerpt: text("excerpt"),
+  category: varchar("category").notNull(), // visa-guide, tips, news
+  author: varchar("author").notNull(),
+  featuredImage: varchar("featured_image"),
+  isPublished: boolean("is_published").default(true),
+  readTime: integer("read_time").default(5), // minutes
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Documentation services table
+export const documentationServices = pgTable("documentation_services", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  processingTime: varchar("processing_time"), // "5-7 business days"
+  requirements: jsonb("requirements").default("[]"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Documentation orders table
+export const documentationOrders = pgTable("documentation_orders", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  serviceId: integer("service_id").notNull().references(() => documentationServices.id),
+  orderNumber: varchar("order_number").notNull().unique(),
+  status: varchar("status").notNull().default("pending"), // pending, processing, completed, cancelled
+  amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
+  stripePaymentId: varchar("stripe_payment_id"),
+  deliveryDetails: jsonb("delivery_details").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Flight bookings table
+export const flightBookings = pgTable("flight_bookings", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  bookingReference: varchar("booking_reference").notNull().unique(),
+  origin: varchar("origin").notNull(),
+  destination: varchar("destination").notNull(),
+  departureDate: timestamp("departure_date").notNull(),
+  returnDate: timestamp("return_date"),
+  passengers: integer("passengers").notNull().default(1),
+  flightClass: varchar("flight_class").notNull().default("economy"),
+  basePrice: decimal("base_price", { precision: 10, scale: 2 }).notNull(),
+  cushMarkup: decimal("cush_markup", { precision: 10, scale: 2 }).notNull(),
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
+  status: varchar("status").notNull().default("pending"), // pending, confirmed, cancelled
+  airlineData: jsonb("airline_data").default("{}"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   wallets: many(wallets),
   transactions: many(transactions),
   immigrationCases: many(immigrationCases),
   chatMessages: many(chatMessages),
+  mentorSessions: many(mentorSessions),
+  eventRegistrations: many(eventRegistrations),
+  documentationOrders: many(documentationOrders),
+  flightBookings: many(flightBookings),
+}));
+
+export const mentorsRelations = relations(mentors, ({ many }) => ({
+  sessions: many(mentorSessions),
+}));
+
+export const mentorSessionsRelations = relations(mentorSessions, ({ one }) => ({
+  user: one(users, {
+    fields: [mentorSessions.userId],
+    references: [users.id],
+  }),
+  mentor: one(mentors, {
+    fields: [mentorSessions.mentorId],
+    references: [mentors.id],
+  }),
+}));
+
+export const communityEventsRelations = relations(communityEvents, ({ many }) => ({
+  registrations: many(eventRegistrations),
+}));
+
+export const eventRegistrationsRelations = relations(eventRegistrations, ({ one }) => ({
+  user: one(users, {
+    fields: [eventRegistrations.userId],
+    references: [users.id],
+  }),
+  event: one(communityEvents, {
+    fields: [eventRegistrations.eventId],
+    references: [communityEvents.id],
+  }),
+}));
+
+export const documentationServicesRelations = relations(documentationServices, ({ many }) => ({
+  orders: many(documentationOrders),
+}));
+
+export const documentationOrdersRelations = relations(documentationOrders, ({ one }) => ({
+  user: one(users, {
+    fields: [documentationOrders.userId],
+    references: [users.id],
+  }),
+  service: one(documentationServices, {
+    fields: [documentationOrders.serviceId],
+    references: [documentationServices.id],
+  }),
+}));
+
+export const flightBookingsRelations = relations(flightBookings, ({ one }) => ({
+  user: one(users, {
+    fields: [flightBookings.userId],
+    references: [users.id],
+  }),
 }));
 
 export const walletsRelations = relations(wallets, ({ one }) => ({
@@ -151,6 +319,54 @@ export const transferSchema = z.object({
   recipient: z.string().email(),
 });
 
+// New schemas for additional features
+export const insertMentorSchema = createInsertSchema(mentors).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertMentorSessionSchema = createInsertSchema(mentorSessions).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertEventSchema = createInsertSchema(communityEvents).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertInsightSchema = createInsertSchema(insights).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertDocServiceSchema = createInsertSchema(documentationServices).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDocOrderSchema = createInsertSchema(documentationOrders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertFlightBookingSchema = createInsertSchema(flightBookings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const flightSearchSchema = z.object({
+  origin: z.string().min(3),
+  destination: z.string().min(3),
+  departureDate: z.string(),
+  returnDate: z.string().optional(),
+  passengers: z.number().min(1).max(9),
+  flightClass: z.enum(["economy", "business", "first"]),
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -163,3 +379,21 @@ export type InsertImmigrationCase = z.infer<typeof insertImmigrationCaseSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type TransferRequest = z.infer<typeof transferSchema>;
+
+// New types for additional features
+export type Mentor = typeof mentors.$inferSelect;
+export type InsertMentor = z.infer<typeof insertMentorSchema>;
+export type MentorSession = typeof mentorSessions.$inferSelect;
+export type InsertMentorSession = z.infer<typeof insertMentorSessionSchema>;
+export type CommunityEvent = typeof communityEvents.$inferSelect;
+export type InsertEvent = z.infer<typeof insertEventSchema>;
+export type EventRegistration = typeof eventRegistrations.$inferSelect;
+export type Insight = typeof insights.$inferSelect;
+export type InsertInsight = z.infer<typeof insertInsightSchema>;
+export type DocumentationService = typeof documentationServices.$inferSelect;
+export type InsertDocService = z.infer<typeof insertDocServiceSchema>;
+export type DocumentationOrder = typeof documentationOrders.$inferSelect;
+export type InsertDocOrder = z.infer<typeof insertDocOrderSchema>;
+export type FlightBooking = typeof flightBookings.$inferSelect;
+export type InsertFlightBooking = z.infer<typeof insertFlightBookingSchema>;
+export type FlightSearchRequest = z.infer<typeof flightSearchSchema>;

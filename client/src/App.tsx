@@ -7,6 +7,9 @@ import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
+import Community from "@/pages/community";
+import Documentation from "@/pages/documentation";
+import Flights from "@/pages/flights";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
