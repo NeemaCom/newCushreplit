@@ -375,15 +375,7 @@ export default function EnhancedSignupModal({ isOpen, onClose, onComplete }: Enh
                     Continue with Gmail
                   </Button>
                   
-                  <Button 
-                    type="button"
-                    variant="outline"
-                    onClick={handleReplitSignup}
-                    className="w-full h-12 border-2 border-cush-gray-300 hover:border-cush-primary font-semibold text-lg rounded-xl"
-                  >
-                    <Shield className="w-5 h-5 mr-2" />
-                    Continue with Replit
-                  </Button>
+
                 </div>
               </div>
 
