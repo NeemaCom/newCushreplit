@@ -116,9 +116,9 @@ export default function AdvancedDashboard() {
     <div className="min-h-screen bg-gradient-subtle">
       <div className="flex">
         {/* Enhanced Sidebar */}
-        <div className="w-64 bg-white border-r border-cush-gray-200 shadow-modern h-screen sticky top-0">
+        <div className="w-64 bg-white border-r border-cush-gray-200 shadow-modern h-screen sticky top-0 flex flex-col">
           {/* Logo Section */}
-          <div className="p-6 border-b border-cush-gray-200">
+          <div className="p-6 border-b border-cush-gray-200 flex-shrink-0">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-modern">
                 <span className="text-white font-bold text-lg">C</span>
@@ -128,7 +128,7 @@ export default function AdvancedDashboard() {
           </div>
 
           {/* Navigation Menu */}
-          <nav className="p-4 space-y-1 overflow-y-auto flex-1">
+          <nav className="p-4 space-y-1 overflow-y-auto flex-1 min-h-0">
             {/* Main Menu Section */}
             <div className="mb-6">
               <div className="text-xs font-semibold text-cush-gray-500 uppercase tracking-wider mb-3 px-3">Overview</div>
@@ -216,7 +216,7 @@ export default function AdvancedDashboard() {
           </nav>
 
           {/* User Profile Section */}
-          <div className="absolute bottom-0 w-full p-4 border-t border-cush-gray-200">
+          <div className="p-4 border-t border-cush-gray-200 flex-shrink-0 mt-auto">
             <div className="space-y-3">
               <div className="flex items-center space-x-3 p-3 bg-cush-gray-25 rounded-xl">
                 <Avatar className="h-10 w-10">
