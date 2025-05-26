@@ -197,8 +197,75 @@ export const flightBookings = pgTable("flight_bookings", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const loanApplications = pgTable("loan_applications", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  loanType: varchar("loan_type").notNull(),
+  amount: varchar("amount").notNull(),
+  purpose: text("purpose").notNull(),
+  duration: varchar("duration").notNull(),
+  income: varchar("income").notNull(),
+  employment: varchar("employment").notNull(),
+  country: varchar("country").notNull(),
+  
+  // Personal Information
+  fullName: varchar("full_name").notNull(),
+  phoneNumber: varchar("phone_number").notNull(),
+  address: text("address").notNull(),
+  
+  // Financial Information
+  bankName: varchar("bank_name").notNull(),
+  accountNumber: varchar("account_number").notNull(),
+  creditScore: varchar("credit_score"),
+  
+  // Application Status
+  status: varchar("status").default("pending"),
+  approvedAmount: varchar("approved_amount"),
+  interestRate: varchar("interest_rate"),
+  
+  // Supporting Documents
+  identificationDoc: varchar("identification_doc"),
+  incomeProof: varchar("income_proof"),
+  bankStatements: varchar("bank_statements"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const userProfiles = pgTable("user_profiles", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique(),
+  bio: text("bio"),
+  phoneNumber: varchar("phone_number"),
+  address: text("address"),
+  dateOfBirth: varchar("date_of_birth"),
+  nationality: varchar("nationality"),
+  occupation: varchar("occupation"),
+  company: varchar("company"),
+  
+  // Preferences
+  timezone: varchar("timezone").default("UTC"),
+  language: varchar("language").default("en"),
+  currency: varchar("currency").default("GBP"),
+  
+  // Verification Status
+  isPhoneVerified: boolean("is_phone_verified").default(false),
+  isEmailVerified: boolean("is_email_verified").default(false),
+  isIdentityVerified: boolean("is_identity_verified").default(false),
+  
+  // Custom avatar upload
+  customAvatarUrl: varchar("custom_avatar_url"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
+  profile: one(userProfiles, {
+    fields: [users.id],
+    references: [userProfiles.userId],
+  }),
   wallets: many(wallets),
   transactions: many(transactions),
   immigrationCases: many(immigrationCases),
@@ -207,6 +274,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   eventRegistrations: many(eventRegistrations),
   documentationOrders: many(documentationOrders),
   flightBookings: many(flightBookings),
+  loanApplications: many(loanApplications),
 }));
 
 export const mentorsRelations = relations(mentors, ({ many }) => ({
@@ -257,6 +325,20 @@ export const documentationOrdersRelations = relations(documentationOrders, ({ on
 export const flightBookingsRelations = relations(flightBookings, ({ one }) => ({
   user: one(users, {
     fields: [flightBookings.userId],
+    references: [users.id],
+  }),
+}));
+
+export const loanApplicationsRelations = relations(loanApplications, ({ one }) => ({
+  user: one(users, {
+    fields: [loanApplications.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
+  user: one(users, {
+    fields: [userProfiles.userId],
     references: [users.id],
   }),
 }));
@@ -397,3 +479,10 @@ export type InsertDocOrder = z.infer<typeof insertDocOrderSchema>;
 export type FlightBooking = typeof flightBookings.$inferSelect;
 export type InsertFlightBooking = z.infer<typeof insertFlightBookingSchema>;
 export type FlightSearchRequest = z.infer<typeof flightSearchSchema>;
+
+export type LoanApplication = typeof loanApplications.$inferSelect;
+export type InsertLoanApplication = z.infer<typeof insertLoanApplicationSchema>;
+
+export type UserProfile = typeof userProfiles.$inferSelect;
+export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
+export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
