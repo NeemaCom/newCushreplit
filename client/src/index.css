@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 20 14.3% 4.1%;
+  --muted: 60 4.8% 95.9%;
+  --muted-foreground: 25 5.3% 44.7%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 20 14.3% 4.1%;
+  --card: 0 0% 100%;
+  --card-foreground: 20 14.3% 4.1%;
+  --border: 20 5.9% 90%;
+  --input: 20 5.9% 90%;
+  --primary: 207 90% 54%; /* Cush Blue */
+  --primary-foreground: 211 100% 99%;
+  --secondary: 60 4.8% 95.9%;
+  --secondary-foreground: 24 9.8% 10%;
+  --accent: 60 4.8% 95.9%;
+  --accent-foreground: 24 9.8% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 60 9.1% 97.8%;
+  --ring: 20 14.3% 4.1%;
+  --radius: 0.5rem;
+  
+  /* Custom Cush colors */
+  --cush-blue: 207 90% 54%; /* #1E40AF equivalent */
+  --cush-emerald: 159 88% 39%; /* #059669 equivalent */
+  --cush-red: 0 73% 48%; /* #DC2626 equivalent */
+  --cush-gray-50: 210 11% 98%; /* #F8FAFC */
+  --cush-gray-100: 210 11% 95%; /* #F1F5F9 */
+  --cush-gray-500: 215 16% 47%; /* #64748B */
+  --cush-gray-900: 221 39% 11%; /* #1E293B */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --primary: 207 90% 54%;
+  --primary-foreground: 211 100% 99%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 240 4.9% 83.9%;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  .cush-blue {
+    color: hsl(var(--cush-blue));
+  }
+  
+  .bg-cush-blue {
+    background-color: hsl(var(--cush-blue));
+  }
+  
+  .cush-emerald {
+    color: hsl(var(--cush-emerald));
+  }
+  
+  .bg-cush-emerald {
+    background-color: hsl(var(--cush-emerald));
+  }
+  
+  .cush-red {
+    color: hsl(var(--cush-red));
+  }
+  
+  .bg-cush-red {
+    background-color: hsl(var(--cush-red));
+  }
+}
