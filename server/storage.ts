@@ -299,6 +299,62 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedBooking;
   }
+
+  // Loan operations
+  async getUserLoanApplications(userId: string): Promise<LoanApplication[]> {
+    return await db.select().from(loanApplications).where(eq(loanApplications.userId, userId)).orderBy(desc(loanApplications.createdAt));
+  }
+
+  async createLoanApplication(application: InsertLoanApplication): Promise<LoanApplication> {
+    const [newApplication] = await db
+      .insert(loanApplications)
+      .values(application)
+      .returning();
+    return newApplication;
+  }
+
+  async updateLoanApplication(id: number, updates: Partial<LoanApplication>): Promise<LoanApplication> {
+    const [application] = await db
+      .update(loanApplications)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(loanApplications.id, id))
+      .returning();
+    return application;
+  }
+
+  // User profile operations
+  async getUserProfile(userId: string): Promise<UserProfile | undefined> {
+    const [profile] = await db.select().from(userProfiles).where(eq(userProfiles.userId, userId));
+    return profile;
+  }
+
+  async createUserProfile(profile: InsertUserProfile): Promise<UserProfile> {
+    const [newProfile] = await db
+      .insert(userProfiles)
+      .values(profile)
+      .returning();
+    return newProfile;
+  }
+
+  async updateUserProfile(userId: string, updates: UpdateUserProfile): Promise<UserProfile> {
+    const existingProfile = await this.getUserProfile(userId);
+    
+    if (existingProfile) {
+      const [profile] = await db
+        .update(userProfiles)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(userProfiles.userId, userId))
+        .returning();
+      return profile;
+    } else {
+      // Create new profile if doesn't exist
+      const [profile] = await db
+        .insert(userProfiles)
+        .values({ userId, ...updates })
+        .returning();
+      return profile;
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();
