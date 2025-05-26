@@ -40,8 +40,28 @@ export const users = pgTable("users", {
 export const wallets = pgTable("wallets", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id),
-  currency: varchar("currency").notNull(), // NGN, GBP
+  currency: varchar("currency").notNull(), // NGN, GBP, USD, EUR
   balance: decimal("balance", { precision: 15, scale: 2 }).notNull().default("0.00"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Virtual cards table for card functionality
+export const virtualCards = pgTable("virtual_cards", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  walletId: integer("wallet_id").notNull().references(() => wallets.id),
+  cardNumber: varchar("card_number").notNull().unique(),
+  expiryMonth: varchar("expiry_month").notNull(),
+  expiryYear: varchar("expiry_year").notNull(),
+  cvv: varchar("cvv").notNull(),
+  cardHolderName: varchar("card_holder_name").notNull(),
+  cardType: varchar("card_type").notNull().default("virtual"), // virtual, physical
+  status: varchar("status").notNull().default("active"), // active, suspended, expired
+  spendingLimit: decimal("spending_limit", { precision: 15, scale: 2 }).default("1000.00"),
+  currency: varchar("currency").notNull(),
+  issuer: varchar("issuer").default("Cush Financial"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -267,6 +287,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     references: [userProfiles.userId],
   }),
   wallets: many(wallets),
+  virtualCards: many(virtualCards),
   transactions: many(transactions),
   immigrationCases: many(immigrationCases),
   chatMessages: many(chatMessages),
@@ -343,10 +364,22 @@ export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
   }),
 }));
 
-export const walletsRelations = relations(wallets, ({ one }) => ({
+export const walletsRelations = relations(wallets, ({ one, many }) => ({
   user: one(users, {
     fields: [wallets.userId],
     references: [users.id],
+  }),
+  virtualCards: many(virtualCards),
+}));
+
+export const virtualCardsRelations = relations(virtualCards, ({ one }) => ({
+  user: one(users, {
+    fields: [virtualCards.userId],
+    references: [users.id],
+  }),
+  wallet: one(wallets, {
+    fields: [virtualCards.walletId],
+    references: [wallets.id],
   }),
 }));
 
@@ -468,6 +501,21 @@ export const updateUserProfileSchema = createInsertSchema(userProfiles).omit({
   updatedAt: true,
 }).partial();
 
+export const insertVirtualCardSchema = createInsertSchema(virtualCards).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const updateVirtualCardSchema = createInsertSchema(virtualCards).omit({
+  id: true,
+  userId: true,
+  walletId: true,
+  cardNumber: true,
+  createdAt: true,
+  updatedAt: true,
+}).partial();
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -505,3 +553,8 @@ export type InsertLoanApplication = z.infer<typeof insertLoanApplicationSchema>;
 export type UserProfile = typeof userProfiles.$inferSelect;
 export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
 export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
+
+// Virtual Card Types
+export type VirtualCard = typeof virtualCards.$inferSelect;
+export type InsertVirtualCard = z.infer<typeof insertVirtualCardSchema>;
+export type UpdateVirtualCard = z.infer<typeof updateVirtualCardSchema>;

@@ -1,6 +1,7 @@
 import {
   users,
   wallets,
+  virtualCards,
   transactions,
   immigrationCases,
   chatMessages,
@@ -16,6 +17,9 @@ import {
   type UpsertUser,
   type Wallet,
   type InsertWallet,
+  type VirtualCard,
+  type InsertVirtualCard,
+  type UpdateVirtualCard,
   type Transaction,
   type InsertTransaction,
   type ImmigrationCase,
@@ -51,6 +55,14 @@ export interface IStorage {
   getWalletByCurrency(userId: string, currency: string): Promise<Wallet | undefined>;
   createWallet(wallet: InsertWallet): Promise<Wallet>;
   updateWalletBalance(userId: string, currency: string, newBalance: string): Promise<Wallet>;
+  
+  // Virtual Card operations
+  getUserVirtualCards(userId: string): Promise<VirtualCard[]>;
+  getVirtualCardsByWallet(walletId: number): Promise<VirtualCard[]>;
+  createVirtualCard(virtualCard: InsertVirtualCard): Promise<VirtualCard>;
+  updateVirtualCard(id: number, updates: UpdateVirtualCard): Promise<VirtualCard>;
+  suspendVirtualCard(id: number): Promise<VirtualCard>;
+  activateVirtualCard(id: number): Promise<VirtualCard>;
   
   // Transaction operations
   getUserTransactions(userId: string, limit?: number): Promise<Transaction[]>;
