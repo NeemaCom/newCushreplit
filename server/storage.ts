@@ -137,6 +137,23 @@ export interface IStorage {
   createCreditBuilder(builder: InsertCreditBuilder): Promise<CreditBuilder>;
   getUserCreditPayments(userId: string): Promise<CreditPayment[]>;
   createCreditPayment(payment: InsertCreditPayment): Promise<CreditPayment>;
+  
+  // Loan pre-qualification operations
+  getUserLoanPreQualifications(userId: string): Promise<LoanPreQualification[]>;
+  createLoanPreQualification(preQualification: InsertLoanPreQualification): Promise<LoanPreQualification>;
+  
+  // Loan referral operations
+  getUserLoanReferrals(userId: string): Promise<LoanReferral[]>;
+  createLoanReferral(referral: InsertLoanReferral): Promise<LoanReferral>;
+  updateLoanReferralStatus(id: number, status: string): Promise<LoanReferral>;
+  
+  // Loan partner operations
+  getActiveLoanPartners(): Promise<LoanPartner[]>;
+  createLoanPartner(partner: InsertLoanPartner): Promise<LoanPartner>;
+  
+  // Revenue tracking operations
+  getReferralRevenue(): Promise<ReferralRevenue[]>;
+  createReferralRevenue(revenue: InsertReferralRevenue): Promise<ReferralRevenue>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -486,6 +503,82 @@ export class DatabaseStorage implements IStorage {
   async createCreditPayment(payment: InsertCreditPayment): Promise<CreditPayment> {
     const [newPayment] = await db.insert(creditPayments).values(payment).returning();
     return newPayment;
+  }
+
+  // Loan pre-qualification operations
+  async getUserLoanPreQualifications(userId: string): Promise<LoanPreQualification[]> {
+    return await db
+      .select()
+      .from(loanPreQualifications)
+      .where(eq(loanPreQualifications.userId, userId))
+      .orderBy(desc(loanPreQualifications.createdAt));
+  }
+
+  async createLoanPreQualification(preQualification: InsertLoanPreQualification): Promise<LoanPreQualification> {
+    const [newPreQualification] = await db
+      .insert(loanPreQualifications)
+      .values(preQualification)
+      .returning();
+    return newPreQualification;
+  }
+
+  // Loan referral operations
+  async getUserLoanReferrals(userId: string): Promise<LoanReferral[]> {
+    return await db
+      .select()
+      .from(loanReferrals)
+      .where(eq(loanReferrals.userId, userId))
+      .orderBy(desc(loanReferrals.createdAt));
+  }
+
+  async createLoanReferral(referral: InsertLoanReferral): Promise<LoanReferral> {
+    const [newReferral] = await db
+      .insert(loanReferrals)
+      .values(referral)
+      .returning();
+    return newReferral;
+  }
+
+  async updateLoanReferralStatus(id: number, status: string): Promise<LoanReferral> {
+    const [updatedReferral] = await db
+      .update(loanReferrals)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(loanReferrals.id, id))
+      .returning();
+    return updatedReferral;
+  }
+
+  // Loan partner operations
+  async getActiveLoanPartners(): Promise<LoanPartner[]> {
+    return await db
+      .select()
+      .from(loanPartners)
+      .where(eq(loanPartners.isActive, true))
+      .orderBy(loanPartners.name);
+  }
+
+  async createLoanPartner(partner: InsertLoanPartner): Promise<LoanPartner> {
+    const [newPartner] = await db
+      .insert(loanPartners)
+      .values(partner)
+      .returning();
+    return newPartner;
+  }
+
+  // Revenue tracking operations
+  async getReferralRevenue(): Promise<ReferralRevenue[]> {
+    return await db
+      .select()
+      .from(referralRevenue)
+      .orderBy(desc(referralRevenue.createdAt));
+  }
+
+  async createReferralRevenue(revenue: InsertReferralRevenue): Promise<ReferralRevenue> {
+    const [newRevenue] = await db
+      .insert(referralRevenue)
+      .values(revenue)
+      .returning();
+    return newRevenue;
   }
 }
 

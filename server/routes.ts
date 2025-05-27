@@ -1020,6 +1020,173 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Loan Pre-Qualification & Referral Program routes
+  app.get('/api/loan-pre-qualifications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const preQualifications = await storage.getUserLoanPreQualifications(userId);
+      res.json(preQualifications);
+    } catch (error) {
+      console.error('Error fetching loan pre-qualifications:', error);
+      res.status(500).json({ message: 'Failed to fetch loan pre-qualifications' });
+    }
+  });
+
+  app.post('/api/loan-pre-qualifications', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Calculate qualification score based on input data
+      const qualificationScore = calculateQualificationScore(req.body);
+      
+      const preQualificationData = {
+        ...req.body,
+        userId,
+        qualificationScore,
+        status: qualificationScore >= 60 ? 'qualified' : 'not_qualified',
+        riskCategory: qualificationScore >= 80 ? 'low' : qualificationScore >= 60 ? 'medium' : 'high',
+        dataRetentionExpiry: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+      };
+      
+      const preQualification = await storage.createLoanPreQualification(preQualificationData);
+      
+      // Return qualification result with estimated loan options
+      const result = {
+        ...preQualification,
+        qualificationScore,
+        estimatedAmount: calculateEstimatedAmount(req.body.requestedAmount, qualificationScore),
+        estimatedRate: calculateEstimatedRate(qualificationScore),
+      };
+      
+      res.status(201).json(result);
+    } catch (error) {
+      console.error('Error creating loan pre-qualification:', error);
+      res.status(500).json({ message: 'Failed to create loan pre-qualification' });
+    }
+  });
+
+  app.get('/api/loan-referrals', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const referrals = await storage.getUserLoanReferrals(userId);
+      res.json(referrals);
+    } catch (error) {
+      console.error('Error fetching loan referrals:', error);
+      res.status(500).json({ message: 'Failed to fetch loan referrals' });
+    }
+  });
+
+  app.post('/api/loan-referrals', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { partnerName, preQualificationId } = req.body;
+      
+      // Generate unique referral code
+      const referralCode = `REF-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      
+      const referralData = {
+        userId,
+        preQualificationId,
+        partnerId: 1, // Default partner ID - would be mapped from partnerName
+        referralCode,
+        status: 'pending',
+        submittedAt: new Date(),
+        expectedFee: '25.00', // $25 referral fee
+      };
+      
+      const referral = await storage.createLoanReferral(referralData);
+      
+      // Here you would integrate with actual partner APIs
+      // For now, we'll simulate the referral submission
+      
+      res.status(201).json(referral);
+    } catch (error) {
+      console.error('Error creating loan referral:', error);
+      res.status(500).json({ message: 'Failed to create loan referral' });
+    }
+  });
+
+  app.get('/api/loan-partners', async (req, res) => {
+    try {
+      const partners = await storage.getActiveLoanPartners();
+      res.json(partners);
+    } catch (error) {
+      console.error('Error fetching loan partners:', error);
+      res.status(500).json({ message: 'Failed to fetch loan partners' });
+    }
+  });
+
+  // Revenue tracking for admin
+  app.get('/api/admin/referral-revenue', isAuthenticated, async (req: any, res) => {
+    try {
+      // In production, add admin role check here
+      const revenue = await storage.getReferralRevenue();
+      res.json(revenue);
+    } catch (error) {
+      console.error('Error fetching referral revenue:', error);
+      res.status(500).json({ message: 'Failed to fetch referral revenue' });
+    }
+  });
+
+  // Helper functions for loan pre-qualification
+  function calculateQualificationScore(data: any): number {
+    let score = 0;
+    
+    // Income scoring (40% weight)
+    const income = parseFloat(data.monthlyIncome);
+    if (income >= 10000) score += 40;
+    else if (income >= 5000) score += 30;
+    else if (income >= 3000) score += 20;
+    else if (income >= 1000) score += 10;
+    
+    // Employment status scoring (30% weight)
+    switch (data.employmentStatus) {
+      case 'employed': score += 30; break;
+      case 'self_employed': score += 25; break;
+      case 'student': score += 15; break;
+      case 'retired': score += 20; break;
+      default: score += 5;
+    }
+    
+    // Credit score scoring (20% weight)
+    const creditScore = parseFloat(data.creditScore) || 600; // Default estimate
+    if (creditScore >= 750) score += 20;
+    else if (creditScore >= 700) score += 15;
+    else if (creditScore >= 650) score += 10;
+    else if (creditScore >= 600) score += 5;
+    
+    // Loan purpose scoring (10% weight)
+    switch (data.loanPurpose) {
+      case 'education': score += 10; break;
+      case 'debt_consolidation': score += 8; break;
+      case 'business': score += 7; break;
+      case 'home_improvement': score += 6; break;
+      default: score += 5;
+    }
+    
+    return Math.min(100, Math.max(0, score));
+  }
+  
+  function calculateEstimatedAmount(requestedAmount: string, qualificationScore: number): string {
+    const requested = parseFloat(requestedAmount);
+    let multiplier = 1.0;
+    
+    if (qualificationScore >= 80) multiplier = 1.0;
+    else if (qualificationScore >= 60) multiplier = 0.8;
+    else if (qualificationScore >= 40) multiplier = 0.6;
+    else multiplier = 0.4;
+    
+    const estimated = Math.min(50000, requested * multiplier);
+    return estimated.toLocaleString();
+  }
+  
+  function calculateEstimatedRate(qualificationScore: number): string {
+    if (qualificationScore >= 80) return "5.99 - 12.99";
+    if (qualificationScore >= 60) return "8.99 - 18.99";
+    if (qualificationScore >= 40) return "12.99 - 24.99";
+    return "18.99 - 35.99";
+  }
+
   // Email verification and password reset routes (FAANG-level security)
   app.post('/api/auth/verify-email', async (req, res) => {
     try {

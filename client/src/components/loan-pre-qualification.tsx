@@ -91,13 +91,13 @@ export default function LoanPreQualification() {
   });
 
   // Fetch user's pre-qualifications
-  const { data: preQualifications = [], isLoading } = useQuery({
+  const { data: preQualifications = [], isLoading } = useQuery<any[]>({
     queryKey: ['/api/loan-pre-qualifications'],
     enabled: !!user,
   });
 
   // Fetch active referrals
-  const { data: referrals = [] } = useQuery({
+  const { data: referrals = [] } = useQuery<any[]>({
     queryKey: ['/api/loan-referrals'],
     enabled: !!user,
   });
