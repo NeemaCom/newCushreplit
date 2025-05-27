@@ -17,7 +17,7 @@ import {
   AlertTriangle,
   Download,
   Copy,
-  Refresh,
+  RotateCcw,
   Settings,
   Globe,
   Clock,
