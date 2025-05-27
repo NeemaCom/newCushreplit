@@ -1,5 +1,6 @@
 import * as client from "openid-client";
 import { Strategy, type VerifyFunction } from "openid-client/passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 import passport from "passport";
 import session from "express-session";
@@ -74,6 +75,50 @@ export async function setupAuth(app: Express) {
 
   const config = await getOidcConfig();
 
+  // Google OAuth Strategy
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    passport.use(new GoogleStrategy({
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: `/api/auth/google/callback`
+    }, async (accessToken, refreshToken, profile, done) => {
+      try {
+        // Extract user information from Google profile
+        const googleUser = {
+          id: profile.id,
+          email: profile.emails?.[0]?.value || null,
+          firstName: profile.name?.givenName || null,
+          lastName: profile.name?.familyName || null,
+          profileImageUrl: profile.photos?.[0]?.value || null,
+        };
+
+        // Create or update user in database
+        const user = await storage.upsertUser(googleUser);
+        
+        // Create session-compatible user object
+        const sessionUser = {
+          claims: {
+            sub: user.id,
+            email: user.email,
+            first_name: user.firstName,
+            last_name: user.lastName,
+            profile_image_url: user.profileImageUrl,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 days
+          },
+          access_token: accessToken,
+          refresh_token: refreshToken,
+          expires_at: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60),
+        };
+
+        return done(null, sessionUser);
+      } catch (error) {
+        console.error('Google OAuth error:', error);
+        return done(error, null);
+      }
+    }));
+  }
+
   const verify: VerifyFunction = async (
     tokens: client.TokenEndpointResponse & client.TokenEndpointResponseHelpers,
     verified: passport.AuthenticateCallback
@@ -113,6 +158,28 @@ export async function setupAuth(app: Express) {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
     })(req, res, next);
+  });
+
+  // Google OAuth routes
+  app.get("/api/auth/google", 
+    passport.authenticate("google", { 
+      scope: ["profile", "email"] 
+    })
+  );
+
+  app.get("/api/auth/google/callback", 
+    passport.authenticate("google", { 
+      failureRedirect: "/api/login" 
+    }),
+    (req, res) => {
+      // Successful authentication, redirect to dashboard
+      res.redirect("/");
+    }
+  );
+
+  // Legacy route for Gmail (redirect to Google)
+  app.get("/api/auth/gmail", (req, res) => {
+    res.redirect("/api/auth/google");
   });
 
   app.get("/api/logout", (req, res) => {

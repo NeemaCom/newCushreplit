@@ -1,0 +1,44 @@
+Users attempting to sign up for the Cush platform using the Gmail (Google) authentication option are consistently failing to complete the process. This prevents new user acquisition via a critical authentication pathway.
+
+Immediate Priority & Scope:
+Reproducibility: Confirm the issue's reproducibility across different environments (dev, staging, production, if applicable) and user scenarios (new users, existing users attempting to link, different browsers/devices).
+Impact Assessment: Determine the scope of affected users and the impact on our user acquisition funnel.
+Investigation & Diagnosis Steps (Systematic Debugging):
+As a senior FAANG engineer, approach this like a critical production incident:
+
+Client-Side Analysis:
+
+Browser Console Logs: Check for JavaScript errors, network request failures (HTTP status codes, response bodies), and any security policy violations (CSP issues).
+Network Tab: Inspect the full request/response flow for the Google OAuth authorization process. Look for redirects, missing parameters, or incorrect scopes.
+User Interface: Observe the exact point of failure in the UI (e.g., button unclickable, spinner stuck, error message displayed).
+Server-Side Analysis (Backend Services):
+
+Application Logs: Scrutinize backend service logs for errors related to:
+Google OAuth callback handling.
+Token exchange failures (authorization code for access/ID tokens).
+User creation/mapping logic after successful authentication with Google.
+Database errors during user persistence.
+Any exceptions or unhandled errors in the authentication flow.
+Authentication Service Logs: If a dedicated auth service exists, check its specific logs.
+API Gateway/Load Balancer Logs: Look for issues with routing, timeouts, or malformed requests reaching the backend.
+Google API Quota/Status: Verify that our Google API project has sufficient quota and that Google's authentication services are operational (check Google Cloud Status Dashboard).
+Configuration Review:
+Google OAuth Credentials: Verify the Client ID, Client Secret, and especially the Authorized Redirect URIs in the Google Cloud Console. Ensure they precisely match what's configured in our application and the actual callback URL used.
+Environment Variables: Confirm that all relevant environment variables for Google authentication are correctly set and accessible to the application.
+Scopes: Ensure the requested OAuth scopes are correct and sufficient for retrieving necessary user information (e.g., email, profile).
+CORS Policies: Verify that appropriate Cross-Origin Resource Sharing (CORS) headers are configured to allow requests from the client-side domain to the Google OAuth endpoints and our backend.
+Third-Party Interactions:
+
+Google's OAuth 2.0 Documentation: Cross-reference our implementation against Google's official documentation for any recent changes or specific requirements.
+Network Connectivity: Confirm that our servers can reach Google's OAuth endpoints without firewall or proxy issues.
+Expected Output & Resolution Plan:
+Root Cause Identification: Clearly state the definitive root cause(s) of the "Gmail Authentication Sign-Up Not Working" issue (e.g., incorrect redirect URI, expired client secret, missing scope, backend parsing error, network issue).
+Detailed Debugging Steps Taken: Document the specific steps performed during diagnosis, including relevant log snippets, error messages, and network payloads.
+Proposed Solution:
+Technical Fix: Provide a precise technical solution to address the root cause. This should include code changes (e.g., specific configuration updates, logic modifications), infrastructure adjustments, or external service updates.
+Security Considerations: Outline how the fix maintains or enhances the security posture (e.g., avoiding hardcoding secrets, ensuring proper token validation).
+Scalability & Reliability: Explain how the fix is designed to be scalable and resilient, preventing recurrence under load.
+Verification Plan: Describe the steps to thoroughly test and verify the fix across different environments and scenarios, including success and failure cases.
+Rollback Plan: Outline a clear rollback strategy in case the fix introduces new issues.
+Monitoring & Alerting: Suggest any new or adjusted monitoring and alerting configurations to detect similar issues proactively in the future.
+Post-Mortem (if critical): Acknowledge that a post-mortem may be required for critical outages to document learnings and prevent recurrence.
