@@ -18,6 +18,7 @@ import {
   PieChart, 
   BarChart3,
   ArrowUpRight,
+  Home,
   ArrowDownRight,
   Plus,
   Eye,
