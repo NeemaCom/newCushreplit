@@ -1128,6 +1128,217 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Concierge Service API Endpoints
+  app.get('/api/concierge/subscription', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subscription = await storage.getUserConciergeSubscription(userId);
+      res.json(subscription || {});
+    } catch (error) {
+      console.error('Error fetching concierge subscription:', error);
+      res.status(500).json({ message: 'Failed to fetch subscription' });
+    }
+  });
+
+  app.post('/api/concierge/subscribe', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { planType, paymentMethodId } = req.body;
+      
+      // Check if user already has active subscription
+      const existingSubscription = await storage.getUserConciergeSubscription(userId);
+      if (existingSubscription?.status === 'active') {
+        return res.status(400).json({ message: 'User already has an active subscription' });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user?.email) {
+        return res.status(400).json({ message: 'User email is required for subscription' });
+      }
+
+      // Create or get Stripe customer
+      let customerId = existingSubscription?.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: user.email,
+          name: `${user.firstName} ${user.lastName}`.trim() || user.email,
+          metadata: { userId }
+        });
+        customerId = customer.id;
+      }
+
+      // Attach payment method to customer
+      await stripe.paymentMethods.attach(paymentMethodId, {
+        customer: customerId,
+      });
+
+      // Set as default payment method
+      await stripe.customers.update(customerId, {
+        invoice_settings: {
+          default_payment_method: paymentMethodId,
+        },
+      });
+
+      // Create subscription
+      const amount = planType === 'yearly' ? 20000 : 2000; // $200/year or $20/month in cents
+      const interval = planType === 'yearly' ? 'year' : 'month';
+
+      const subscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: 'Cush Concierge Service',
+              description: 'Premium migration assistance with dedicated support',
+            },
+            unit_amount: amount,
+            recurring: { interval },
+          },
+        }],
+        payment_behavior: 'default_incomplete',
+        expand: ['latest_invoice.payment_intent'],
+        metadata: { userId, planType }
+      });
+
+      // Save subscription to database
+      const subscriptionData = {
+        userId,
+        stripeSubscriptionId: subscription.id,
+        stripeCustomerId: customerId,
+        status: 'active',
+        planType,
+        amount: (amount / 100).toString(),
+        currency: 'USD',
+        currentPeriodStart: new Date(subscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+        subscriptionStartedAt: new Date(),
+        nextBillingDate: new Date(subscription.current_period_end * 1000),
+      };
+
+      const dbSubscription = await storage.createConciergeSubscription(subscriptionData);
+
+      // Assign migration assistant
+      const availableAssistants = await storage.getAvailableMigrationAssistants();
+      if (availableAssistants.length > 0) {
+        const assistant = availableAssistants.find(a => a.currentClients < a.maxClients) || availableAssistants[0];
+        await storage.assignMigrationAssistant(dbSubscription.id, assistant.id);
+      }
+
+      // Create audit log
+      await storage.createConciergeAuditLog({
+        userId,
+        subscriptionId: dbSubscription.id,
+        eventType: 'subscription_created',
+        eventData: { planType, amount: amount / 100 },
+        amount: (amount / 100).toString(),
+        currency: 'USD',
+        status: 'success',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+      });
+
+      const latest_invoice = subscription.latest_invoice as any;
+      const payment_intent = latest_invoice?.payment_intent;
+
+      if (payment_intent?.status === 'requires_action') {
+        res.json({
+          requiresAction: true,
+          clientSecret: payment_intent.client_secret,
+        });
+      } else {
+        res.json({ success: true, subscription: dbSubscription });
+      }
+
+    } catch (error) {
+      console.error('Error creating concierge subscription:', error);
+      res.status(500).json({ message: 'Failed to create subscription' });
+    }
+  });
+
+  app.get('/api/concierge/assistants', async (req, res) => {
+    try {
+      const assistants = await storage.getAvailableMigrationAssistants();
+      res.json(assistants);
+    } catch (error) {
+      console.error('Error fetching migration assistants:', error);
+      res.status(500).json({ message: 'Failed to fetch assistants' });
+    }
+  });
+
+  app.delete('/api/concierge/subscription', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const subscription = await storage.getUserConciergeSubscription(userId);
+      
+      if (!subscription || subscription.status !== 'active') {
+        return res.status(404).json({ message: 'No active subscription found' });
+      }
+
+      // Cancel Stripe subscription
+      await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+        cancel_at_period_end: true,
+      });
+
+      // Update database
+      const updatedSubscription = await storage.cancelConciergeSubscription(userId);
+
+      // Create audit log
+      await storage.createConciergeAuditLog({
+        userId,
+        subscriptionId: subscription.id,
+        eventType: 'cancelled',
+        eventData: { reason: 'user_requested' },
+        status: 'success',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+      });
+
+      res.json({ success: true, subscription: updatedSubscription });
+    } catch (error) {
+      console.error('Error cancelling concierge subscription:', error);
+      res.status(500).json({ message: 'Failed to cancel subscription' });
+    }
+  });
+
+  app.get('/api/concierge/interactions', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const interactions = await storage.getUserConciergeInteractions(userId);
+      res.json(interactions);
+    } catch (error) {
+      console.error('Error fetching concierge interactions:', error);
+      res.status(500).json({ message: 'Failed to fetch interactions' });
+    }
+  });
+
+  app.post('/api/concierge/interactions', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { subject, description, interactionType, priority } = req.body;
+      
+      const subscription = await storage.getUserConciergeSubscription(userId);
+      if (!subscription || subscription.status !== 'active') {
+        return res.status(403).json({ message: 'Active concierge subscription required' });
+      }
+
+      const interaction = await storage.createConciergeInteraction({
+        userId,
+        subscriptionId: subscription.id,
+        interactionType,
+        subject,
+        description,
+        priority: priority || 'normal',
+        status: 'pending'
+      });
+
+      res.status(201).json(interaction);
+    } catch (error) {
+      console.error('Error creating concierge interaction:', error);
+      res.status(500).json({ message: 'Failed to create interaction' });
+    }
+  });
+
   // Helper functions for loan pre-qualification
   function calculateQualificationScore(data: any): number {
     let score = 0;

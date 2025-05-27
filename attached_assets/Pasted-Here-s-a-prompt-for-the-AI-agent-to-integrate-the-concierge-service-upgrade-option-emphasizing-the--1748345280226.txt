@@ -1,0 +1,49 @@
+Here's a prompt for the AI agent to integrate the concierge service upgrade option, emphasizing the user experience and secure transaction, from a FAANG senior engineer's viewpoint:
+
+---
+## Prompt: Integrate Concierge Service Upgrade Option
+
+**Objective:** Implement a seamless and secure mechanism for users to upgrade to a "Concierge Service" within the existing chatbot (Imisi 2.0) or WhatsApp group integration. This premium add-on provides users with an assigned migration assistant for dedicated support, generating a subscription revenue.
+
+---
+### Core Requirements & User Flow:
+
+1.  **Concierge Service Introduction/Promotion:**
+    * **Chatbot Integration:** Within the Imisi 2.0 (Gemini) chatbot, design conversational flows to introduce the "Concierge Service" when relevant (e.g., after answering certain questions, or as a direct menu option).
+    * **WhatsApp Group (Passive/Reactive):** For users in the free WhatsApp group, the platform should support sending a discreet, secure link or prompt to initiate the upgrade process when explicitly requested or triggered by specific keywords. *Note: Direct transactional interactions within WhatsApp groups are generally not recommended for security and compliance; a secure link to the web platform is preferred.*
+
+2.  **Upgrade Flow & Payment Integration:**
+    * **Secure Payment Gateway:** Leverage the existing **Stripe** and/or **Paystack** integrations for processing the **$20 subscription fee**.
+    * **Dedicated Upgrade Page/Modal:** Upon user initiation, direct them to a secure, dedicated web page or modal within the Cush platform to:
+        * Clearly explain the "Concierge Service" benefits (assigned migration assistant, task assistance, follow-ups).
+        * Display the subscription fee and billing cycle ($20/month, $20/year, etc. – *clarify desired frequency if not monthly*).
+        * Collect payment information securely via Stripe/Paystack.
+        * Provide clear terms of service and cancellation policy.
+    * **Confirmation & Onboarding:**
+        * Upon successful payment, provide immediate confirmation.
+        * Initiate the "Concierge Service" onboarding process: Assign the user to a migration assistant and communicate how they can connect (e.g., direct chat link, email introduction).
+        * Update the user's profile status to reflect their "Concierge" subscription.
+
+3.  **Subscription Management:**
+    * **Recurring Billing:** Implement recurring billing for the $20 subscription via Stripe/Paystack.
+    * **User Management:** Provide users with a self-service option within their Cush profile to:
+        * View subscription status.
+        * Update payment methods.
+        * Cancel their subscription.
+    * **Admin Management:** Admins must have the ability to:
+        * View all active/inactive concierge subscriptions.
+        * Manage (activate/deactivate) assigned migration assistants.
+        * Access billing reports.
+
+---
+### FAANG Engineering Principles (Prioritized):
+
+* **Security of Transactions:** Ensure all payment processing adheres strictly to PCI DSS compliance standards. Tokenization of payment data is mandatory.
+* **Authentication & Authorization:** The upgrade process must be tightly integrated with existing user authentication. Only authenticated users can upgrade, and their subscription status must control access to concierge features.
+* **Atomic Transactions:** Ensure the payment and subscription activation are an atomic operation (either both succeed, or both fail and are rolled back) to prevent inconsistent states.
+* **Clear User Consent:** Explicitly obtain user consent for recurring billing before processing any payment.
+* **Fault Tolerance & Retries:** Implement robust error handling and retry mechanisms for payment gateway interactions.
+* **Event-Driven Architecture (Recommended):** Consider using events (e.g., `ConciergeSubscriptionActivated`, `PaymentFailed`) to trigger downstream processes like assistant assignment and user notification, ensuring scalability and decoupling.
+* **Performance:** The upgrade flow must be fast and responsive, minimizing user friction during the payment process.
+* **Auditability:** Comprehensive logging of all subscription events (initiation, payment success/failure, cancellation) for compliance and troubleshooting.
+* **Scalability:** The system must scale to handle a growing number of concierge subscribers and associated recurring payments.

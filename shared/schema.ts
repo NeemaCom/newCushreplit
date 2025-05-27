@@ -711,6 +711,119 @@ export const insertReferralRevenueSchema = createInsertSchema(referralRevenue).o
   updatedAt: true,
 });
 
+// Concierge Service Schema
+export const conciergeSubscriptions = pgTable("concierge_subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  stripeSubscriptionId: varchar("stripe_subscription_id").unique(),
+  stripeCustomerId: varchar("stripe_customer_id"),
+  status: varchar("status").notNull().default("active"), // active, cancelled, past_due, unpaid
+  planType: varchar("plan_type").notNull().default("monthly"), // monthly, yearly
+  amount: varchar("amount").notNull().default("20.00"),
+  currency: varchar("currency").notNull().default("USD"),
+  currentPeriodStart: timestamp("current_period_start"),
+  currentPeriodEnd: timestamp("current_period_end"),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
+  assignedMigrationAssistant: varchar("assigned_migration_assistant"),
+  assistantContactInfo: jsonb("assistant_contact_info"),
+  subscriptionStartedAt: timestamp("subscription_started_at").defaultNow(),
+  lastBillingDate: timestamp("last_billing_date"),
+  nextBillingDate: timestamp("next_billing_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Migration Assistants
+export const migrationAssistants = pgTable("migration_assistants", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  email: varchar("email").unique().notNull(),
+  phone: varchar("phone"),
+  expertise: jsonb("expertise"), // array of specialization areas
+  maxClients: integer("max_clients").default(50),
+  currentClients: integer("current_clients").default(0),
+  isActive: boolean("is_active").default(true),
+  languages: jsonb("languages"), // supported languages
+  timezone: varchar("timezone"),
+  profileImage: varchar("profile_image"),
+  bio: text("bio"),
+  rating: varchar("rating").default("5.0"),
+  completedCases: integer("completed_cases").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Concierge Service Interactions
+export const conciergeInteractions = pgTable("concierge_interactions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  subscriptionId: integer("subscription_id").references(() => conciergeSubscriptions.id),
+  assistantId: integer("assistant_id").references(() => migrationAssistants.id),
+  interactionType: varchar("interaction_type").notNull(), // chat, call, email, task_completion
+  subject: varchar("subject"),
+  description: text("description"),
+  status: varchar("status").default("pending"), // pending, in_progress, completed, cancelled
+  priority: varchar("priority").default("normal"), // low, normal, high, urgent
+  dueDate: timestamp("due_date"),
+  completedAt: timestamp("completed_at"),
+  satisfaction: integer("satisfaction"), // 1-5 rating
+  followUpRequired: boolean("follow_up_required").default(false),
+  followUpDate: timestamp("follow_up_date"),
+  attachments: jsonb("attachments"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Billing Events for Audit Trail
+export const conciergeAuditLog = pgTable("concierge_audit_log", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  subscriptionId: integer("subscription_id").references(() => conciergeSubscriptions.id),
+  eventType: varchar("event_type").notNull(), // subscription_created, payment_success, payment_failed, cancelled, assistant_assigned
+  eventData: jsonb("event_data"),
+  stripeEventId: varchar("stripe_event_id"),
+  amount: varchar("amount"),
+  currency: varchar("currency"),
+  paymentMethod: varchar("payment_method"),
+  status: varchar("status"),
+  errorMessage: text("error_message"),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Validation schemas
+export const conciergeUpgradeSchema = z.object({
+  planType: z.enum(["monthly", "yearly"]),
+  paymentMethodId: z.string().min(1, "Payment method is required"),
+  consentToRecurringBilling: z.boolean().refine(val => val === true, "Consent to recurring billing is required"),
+  termsAccepted: z.boolean().refine(val => val === true, "Terms of service must be accepted"),
+});
+
+export const insertConciergeSubscriptionSchema = createInsertSchema(conciergeSubscriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertMigrationAssistantSchema = createInsertSchema(migrationAssistants).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertConciergeInteractionSchema = createInsertSchema(conciergeInteractions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertConciergeAuditSchema = createInsertSchema(conciergeAuditLog).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -773,3 +886,13 @@ export type LoanReferral = typeof loanReferrals.$inferSelect;
 export type InsertLoanReferral = z.infer<typeof insertLoanReferralSchema>;
 export type ReferralRevenue = typeof referralRevenue.$inferSelect;
 export type InsertReferralRevenue = z.infer<typeof insertReferralRevenueSchema>;
+
+// Concierge Service Types
+export type ConciergeSubscription = typeof conciergeSubscriptions.$inferSelect;
+export type InsertConciergeSubscription = z.infer<typeof insertConciergeSubscriptionSchema>;
+export type MigrationAssistant = typeof migrationAssistants.$inferSelect;
+export type InsertMigrationAssistant = z.infer<typeof insertMigrationAssistantSchema>;
+export type ConciergeInteraction = typeof conciergeInteractions.$inferSelect;
+export type InsertConciergeInteraction = z.infer<typeof insertConciergeInteractionSchema>;
+export type ConciergeAuditLog = typeof conciergeAuditLog.$inferSelect;
+export type InsertConciergeAudit = z.infer<typeof insertConciergeAuditSchema>;

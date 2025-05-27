@@ -154,6 +154,25 @@ export interface IStorage {
   // Revenue tracking operations
   getReferralRevenue(): Promise<ReferralRevenue[]>;
   createReferralRevenue(revenue: InsertReferralRevenue): Promise<ReferralRevenue>;
+  
+  // Concierge service operations
+  getUserConciergeSubscription(userId: string): Promise<ConciergeSubscription | undefined>;
+  createConciergeSubscription(subscription: InsertConciergeSubscription): Promise<ConciergeSubscription>;
+  updateConciergeSubscription(id: number, updates: Partial<ConciergeSubscription>): Promise<ConciergeSubscription>;
+  cancelConciergeSubscription(userId: string): Promise<ConciergeSubscription>;
+  
+  // Migration assistant operations
+  getAvailableMigrationAssistants(): Promise<MigrationAssistant[]>;
+  assignMigrationAssistant(subscriptionId: number, assistantId: number): Promise<ConciergeSubscription>;
+  createMigrationAssistant(assistant: InsertMigrationAssistant): Promise<MigrationAssistant>;
+  
+  // Concierge interaction operations
+  getUserConciergeInteractions(userId: string): Promise<ConciergeInteraction[]>;
+  createConciergeInteraction(interaction: InsertConciergeInteraction): Promise<ConciergeInteraction>;
+  updateConciergeInteraction(id: number, updates: Partial<ConciergeInteraction>): Promise<ConciergeInteraction>;
+  
+  // Audit log operations
+  createConciergeAuditLog(log: InsertConciergeAudit): Promise<ConciergeAuditLog>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -579,6 +598,131 @@ export class DatabaseStorage implements IStorage {
       .values(revenue)
       .returning();
     return newRevenue;
+  }
+
+  // Concierge service operations
+  async getUserConciergeSubscription(userId: string): Promise<ConciergeSubscription | undefined> {
+    const [subscription] = await db
+      .select()
+      .from(conciergeSubscriptions)
+      .where(eq(conciergeSubscriptions.userId, userId))
+      .orderBy(desc(conciergeSubscriptions.createdAt))
+      .limit(1);
+    return subscription;
+  }
+
+  async createConciergeSubscription(subscription: InsertConciergeSubscription): Promise<ConciergeSubscription> {
+    const [newSubscription] = await db
+      .insert(conciergeSubscriptions)
+      .values(subscription)
+      .returning();
+    return newSubscription;
+  }
+
+  async updateConciergeSubscription(id: number, updates: Partial<ConciergeSubscription>): Promise<ConciergeSubscription> {
+    const [updatedSubscription] = await db
+      .update(conciergeSubscriptions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(conciergeSubscriptions.id, id))
+      .returning();
+    return updatedSubscription;
+  }
+
+  async cancelConciergeSubscription(userId: string): Promise<ConciergeSubscription> {
+    const [cancelledSubscription] = await db
+      .update(conciergeSubscriptions)
+      .set({ 
+        status: 'cancelled', 
+        cancelAtPeriodEnd: true,
+        updatedAt: new Date() 
+      })
+      .where(eq(conciergeSubscriptions.userId, userId))
+      .returning();
+    return cancelledSubscription;
+  }
+
+  // Migration assistant operations
+  async getAvailableMigrationAssistants(): Promise<MigrationAssistant[]> {
+    return await db
+      .select()
+      .from(migrationAssistants)
+      .where(eq(migrationAssistants.isActive, true))
+      .orderBy(migrationAssistants.rating);
+  }
+
+  async assignMigrationAssistant(subscriptionId: number, assistantId: number): Promise<ConciergeSubscription> {
+    const [assistant] = await db
+      .select()
+      .from(migrationAssistants)
+      .where(eq(migrationAssistants.id, assistantId));
+
+    const [updatedSubscription] = await db
+      .update(conciergeSubscriptions)
+      .set({ 
+        assignedMigrationAssistant: assistant.name,
+        assistantContactInfo: {
+          name: assistant.name,
+          email: assistant.email,
+          phone: assistant.phone
+        },
+        updatedAt: new Date() 
+      })
+      .where(eq(conciergeSubscriptions.id, subscriptionId))
+      .returning();
+
+    // Update assistant's current client count
+    await db
+      .update(migrationAssistants)
+      .set({ 
+        currentClients: sql`${migrationAssistants.currentClients} + 1`,
+        updatedAt: new Date()
+      })
+      .where(eq(migrationAssistants.id, assistantId));
+
+    return updatedSubscription;
+  }
+
+  async createMigrationAssistant(assistant: InsertMigrationAssistant): Promise<MigrationAssistant> {
+    const [newAssistant] = await db
+      .insert(migrationAssistants)
+      .values(assistant)
+      .returning();
+    return newAssistant;
+  }
+
+  // Concierge interaction operations
+  async getUserConciergeInteractions(userId: string): Promise<ConciergeInteraction[]> {
+    return await db
+      .select()
+      .from(conciergeInteractions)
+      .where(eq(conciergeInteractions.userId, userId))
+      .orderBy(desc(conciergeInteractions.createdAt));
+  }
+
+  async createConciergeInteraction(interaction: InsertConciergeInteraction): Promise<ConciergeInteraction> {
+    const [newInteraction] = await db
+      .insert(conciergeInteractions)
+      .values(interaction)
+      .returning();
+    return newInteraction;
+  }
+
+  async updateConciergeInteraction(id: number, updates: Partial<ConciergeInteraction>): Promise<ConciergeInteraction> {
+    const [updatedInteraction] = await db
+      .update(conciergeInteractions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(conciergeInteractions.id, id))
+      .returning();
+    return updatedInteraction;
+  }
+
+  // Audit log operations
+  async createConciergeAuditLog(log: InsertConciergeAudit): Promise<ConciergeAuditLog> {
+    const [newLog] = await db
+      .insert(conciergeAuditLog)
+      .values(log)
+      .returning();
+    return newLog;
   }
 }
 
