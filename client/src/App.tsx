@@ -17,6 +17,7 @@ import Loans from "@/pages/loans";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Imisi from "@/pages/imisi";
 import Wallet from "@/pages/wallet";
+import FinancialServices from "@/pages/financial-services";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -37,6 +38,7 @@ function Router() {
           <Route path="/loans" component={Loans} />
           <Route path="/imisi" component={Imisi} />
           <Route path="/wallet" component={Wallet} />
+          <Route path="/financial-services" component={FinancialServices} />
           <Route path="/admin" component={AdminDashboard} />
         </>
       )}

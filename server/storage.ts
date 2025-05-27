@@ -13,6 +13,9 @@ import {
   documentationServices,
   documentationOrders,
   flightBookings,
+  educationalPayments,
+  creditBuilders,
+  creditPayments,
   type User,
   type UpsertUser,
   type Wallet,
@@ -32,6 +35,12 @@ import {
   type InsertMentorSession,
   type CommunityEvent,
   type InsertEvent,
+  type EducationalPayment,
+  type InsertEducationalPayment,
+  type CreditBuilder,
+  type InsertCreditBuilder,
+  type CreditPayment,
+  type InsertCreditPayment,
   type EventRegistration,
   type Insight,
   type InsertInsight,
@@ -106,6 +115,16 @@ export interface IStorage {
   getUserProfile(userId: string): Promise<UserProfile | undefined>;
   createUserProfile(profile: InsertUserProfile): Promise<UserProfile>;
   updateUserProfile(userId: string, updates: UpdateUserProfile): Promise<UserProfile>;
+  
+  // Educational payment operations
+  getUserEducationalPayments(userId: string): Promise<EducationalPayment[]>;
+  createEducationalPayment(payment: InsertEducationalPayment): Promise<EducationalPayment>;
+  
+  // Credit builder operations
+  getUserCreditBuilders(userId: string): Promise<CreditBuilder[]>;
+  createCreditBuilder(builder: InsertCreditBuilder): Promise<CreditBuilder>;
+  getUserCreditPayments(userId: string): Promise<CreditPayment[]>;
+  createCreditPayment(payment: InsertCreditPayment): Promise<CreditPayment>;
 }
 
 export class DatabaseStorage implements IStorage {
