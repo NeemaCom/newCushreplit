@@ -1543,6 +1543,148 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Real-time Transaction Processing API
+  app.post('/api/transactions/process', paymentRateLimit, isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { amount, currency, type, destinationCountry, purpose, sourceCountry = 'NG' } = req.body;
+
+      // Enhanced security logging for transaction processing
+      securityLogger.logSecurityEvent('TRANSACTION_INITIATED', {
+        userId,
+        amount,
+        currency,
+        type,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      }, 'medium');
+
+      // Process transaction through compliance engine
+      const result = await transactionProcessor.processTransaction({
+        userId,
+        amount: parseFloat(amount),
+        currency,
+        type,
+        sourceCountry,
+        destinationCountry,
+        purpose
+      });
+
+      res.json(result);
+    } catch (error) {
+      console.error('Transaction processing error:', error);
+      res.status(500).json({ message: 'Failed to process transaction' });
+    }
+  });
+
+  // Get transaction status
+  app.get('/api/transactions/:transactionId/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const { transactionId } = req.params;
+      const userId = req.user.claims.sub;
+      
+      // Get transaction status from database
+      const transaction = await storage.getTransactionById(transactionId);
+      
+      if (!transaction || transaction.userId !== userId) {
+        return res.status(404).json({ message: 'Transaction not found' });
+      }
+
+      res.json({
+        transactionId,
+        status: transaction.status,
+        amount: transaction.amount,
+        currency: transaction.currency,
+        createdAt: transaction.createdAt,
+        updatedAt: transaction.updatedAt
+      });
+    } catch (error) {
+      console.error('Error fetching transaction status:', error);
+      res.status(500).json({ message: 'Failed to fetch transaction status' });
+    }
+  });
+
+  // Compliance Dashboard API
+  app.get('/api/compliance/metrics', isAuthenticated, async (req: any, res) => {
+    try {
+      const { timeframe = '24h' } = req.query;
+      const metrics = await ComplianceMetrics.getDashboardMetrics(timeframe as any);
+      res.json(metrics);
+    } catch (error) {
+      console.error('Error fetching compliance metrics:', error);
+      res.status(500).json({ message: 'Failed to fetch compliance metrics' });
+    }
+  });
+
+  // Real-time processing statistics
+  app.get('/api/transactions/processing-stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const stats = transactionProcessor.getProcessingStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching processing stats:', error);
+      res.status(500).json({ message: 'Failed to fetch processing statistics' });
+    }
+  });
+
+  // Compliance check for user
+  app.post('/api/compliance/check-user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const userProfile = await storage.getUserProfile(userId);
+      
+      const kycResult = await ComplianceEngine.validateKYC(userId, userProfile);
+      
+      res.json({
+        userId,
+        kycCompliant: kycResult.compliant,
+        requiredDocuments: kycResult.requiredDocuments,
+        verificationStatus: kycResult.verificationStatus
+      });
+    } catch (error) {
+      console.error('Error performing compliance check:', error);
+      res.status(500).json({ message: 'Failed to perform compliance check' });
+    }
+  });
+
+  // Transaction risk analysis
+  app.post('/api/transactions/analyze-risk', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { amount, currency, type, destinationCountry, purpose } = req.body;
+      
+      // Get user transaction history for analysis
+      const userHistory = await storage.getUserTransactions(userId, 50);
+      
+      const transaction = {
+        id: 'temp-analysis',
+        userId,
+        amount: parseFloat(amount),
+        currency,
+        type,
+        sourceCountry: 'NG',
+        destinationCountry,
+        purpose,
+        timestamp: new Date()
+      };
+      
+      const amlResult = await ComplianceEngine.performAMLCheck(transaction, userHistory);
+      
+      res.json({
+        riskLevel: amlResult.riskLevel,
+        riskScore: amlResult.riskLevel === 'LOW' ? 1 : 
+                  amlResult.riskLevel === 'MEDIUM' ? 2 :
+                  amlResult.riskLevel === 'HIGH' ? 3 : 4,
+        flags: amlResult.flags,
+        recommendation: amlResult.compliant ? 'APPROVE' : 'REVIEW',
+        requiredActions: amlResult.requiredActions
+      });
+    } catch (error) {
+      console.error('Error analyzing transaction risk:', error);
+      res.status(500).json({ message: 'Failed to analyze transaction risk' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
