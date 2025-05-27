@@ -21,6 +21,7 @@ import Wallet from "@/pages/wallet";
 import FinancialServices from "@/pages/financial-services";
 import Concierge from "@/pages/concierge";
 import ComplianceDashboard from "@/pages/compliance-dashboard";
+import SecurityDashboard from "@/pages/security-dashboard";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -45,6 +46,7 @@ function Router() {
           <Route path="/financial-services" component={FinancialServices} />
           <Route path="/concierge" component={Concierge} />
           <Route path="/compliance" component={ComplianceDashboard} />
+          <Route path="/security" component={SecurityDashboard} />
           <Route path="/admin" component={AdminDashboard} />
         </>
       )}
