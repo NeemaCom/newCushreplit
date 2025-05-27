@@ -12,7 +12,8 @@ import {
   DollarSign,
   Bot,
   Crown,
-  Building
+  Building,
+  MapPin
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -27,6 +28,7 @@ export default function Header() {
   const navigationItems = [
     { href: "/", label: "Dashboard", icon: Home },
     { href: "/wallet", label: "Wallet", icon: Wallet },
+    { href: "/homebase", label: "HomeBase", icon: MapPin },
     { href: "/loans", label: "Loans", icon: DollarSign },
     { href: "/community", label: "Community", icon: Users },
     { href: "/documentation", label: "Documents", icon: FileText },

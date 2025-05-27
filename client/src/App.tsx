@@ -22,6 +22,7 @@ import FinancialServices from "@/pages/financial-services";
 import Concierge from "@/pages/concierge";
 import ComplianceDashboard from "@/pages/compliance-dashboard";
 import SecurityDashboard from "@/pages/security-dashboard";
+import HomeBase from "@/pages/homebase";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -63,6 +64,7 @@ function Router() {
           <Route path="/loan-partners" component={LoanPartners} />
           <Route path="/imisi" component={Imisi} />
           <Route path="/wallet" component={Wallet} />
+          <Route path="/homebase" component={HomeBase} />
           <Route path="/financial-services" component={FinancialServices} />
           <Route path="/concierge" component={Concierge} />
           <Route path="/compliance" component={ComplianceDashboard} />
