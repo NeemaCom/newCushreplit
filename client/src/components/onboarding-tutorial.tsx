@@ -172,35 +172,66 @@ export default function OnboardingTutorial() {
     const rect = highlightedElement.getBoundingClientRect();
     const tooltipWidth = 350;
     const tooltipHeight = 200;
+    const margin = 16;
+    
+    // Calculate viewport constraints
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    let position = { top: 0, left: 0 };
     
     switch (step.position) {
       case 'right':
-        return {
+        position = {
           top: rect.top + rect.height / 2 - tooltipHeight / 2,
           left: rect.right + 20,
         };
+        // Ensure tooltip doesn't go off right edge
+        if (position.left + tooltipWidth > viewportWidth - margin) {
+          position.left = rect.left - tooltipWidth - 20; // Switch to left side
+        }
+        break;
       case 'left':
-        return {
+        position = {
           top: rect.top + rect.height / 2 - tooltipHeight / 2,
           left: rect.left - tooltipWidth - 20,
         };
+        // Ensure tooltip doesn't go off left edge
+        if (position.left < margin) {
+          position.left = rect.right + 20; // Switch to right side
+        }
+        break;
       case 'top':
-        return {
+        position = {
           top: rect.top - tooltipHeight - 20,
           left: rect.left + rect.width / 2 - tooltipWidth / 2,
         };
+        // Ensure tooltip doesn't go off top edge
+        if (position.top < margin) {
+          position.top = rect.bottom + 20; // Switch to bottom
+        }
+        break;
       case 'bottom':
-        return {
+      default:
+        position = {
           top: rect.bottom + 20,
           left: rect.left + rect.width / 2 - tooltipWidth / 2,
         };
-      default:
-        return {
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        };
+        // Ensure tooltip doesn't go off bottom edge
+        if (position.top + tooltipHeight > viewportHeight - margin) {
+          position.top = rect.top - tooltipHeight - 20; // Switch to top
+        }
+        break;
     }
+    
+    // Final bounds checking for all positions
+    position.top = Math.max(margin, Math.min(position.top, viewportHeight - tooltipHeight - margin));
+    position.left = Math.max(margin, Math.min(position.left, viewportWidth - tooltipWidth - margin));
+    
+    return {
+      top: `${position.top}px`,
+      left: `${position.left}px`,
+    };
   };
 
   return (
