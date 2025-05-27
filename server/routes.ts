@@ -1685,6 +1685,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Loan Partners API Endpoints
+  app.get('/api/loan-partners', isAuthenticated, async (req: any, res) => {
+    try {
+      const { country, type } = req.query;
+      const { LoanPartnersManager } = await import('./loan-partners');
+      
+      let partners;
+      if (country) {
+        partners = LoanPartnersManager.getPartnersByCountry(country);
+      } else if (type) {
+        partners = LoanPartnersManager.getPartnersByType(type);
+      } else {
+        partners = LoanPartnersManager.getAllPartners();
+      }
+      
+      res.json(partners);
+    } catch (error) {
+      console.error('Error fetching loan partners:', error);
+      res.status(500).json({ message: 'Failed to fetch loan partners' });
+    }
+  });
+
+  app.post('/api/loan-partners/match', isAuthenticated, async (req: any, res) => {
+    try {
+      const { loanAmount, currency, country, purpose } = req.body;
+      const { LoanPartnersManager } = await import('./loan-partners');
+      
+      const userProfile = {
+        country,
+        loanAmount: parseFloat(loanAmount),
+        currency,
+        purpose
+      };
+      
+      const matchingPartners = LoanPartnersManager.findMatchingPartners(userProfile);
+      
+      res.json({
+        matchingPartners,
+        totalMatches: matchingPartners.length
+      });
+    } catch (error) {
+      console.error('Error matching loan partners:', error);
+      res.status(500).json({ message: 'Failed to match loan partners' });
+    }
+  });
+
+  app.post('/api/loan-partners/create-referral', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { partnerId, loanAmount, currency } = req.body;
+      const { LoanPartnersManager } = await import('./loan-partners');
+      
+      // Get user profile for referral
+      const userProfile = await storage.getUserProfile(userId);
+      
+      const referral = await LoanPartnersManager.createReferral({
+        userId,
+        partnerId,
+        loanAmount: parseFloat(loanAmount),
+        currency,
+        userProfile
+      });
+      
+      // Store referral in database
+      await storage.createLoanReferral({
+        userId,
+        partnerId,
+        loanAmount: loanAmount.toString(),
+        currency,
+        status: 'SUBMITTED',
+        referralId: referral.referralId,
+        estimatedCommission: referral.estimatedCommission.toString()
+      });
+      
+      res.json(referral);
+    } catch (error) {
+      console.error('Error creating loan referral:', error);
+      res.status(500).json({ message: 'Failed to create loan referral' });
+    }
+  });
+
+  app.get('/api/loan-partners/:partnerId/test', isAuthenticated, async (req: any, res) => {
+    try {
+      const { partnerId } = req.params;
+      const { apiKey } = req.query;
+      const { LoanPartnersManager } = await import('./loan-partners');
+      
+      const testResult = await LoanPartnersManager.testPartnerConnection(partnerId, apiKey);
+      
+      res.json(testResult);
+    } catch (error) {
+      console.error('Error testing partner connection:', error);
+      res.status(500).json({ message: 'Failed to test partner connection' });
+    }
+  });
+
+  app.get('/api/loan-referrals', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const referrals = await storage.getUserLoanReferrals(userId);
+      
+      res.json(referrals);
+    } catch (error) {
+      console.error('Error fetching loan referrals:', error);
+      res.status(500).json({ message: 'Failed to fetch loan referrals' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -1,0 +1,54 @@
+ Fully activate the loan pre-qualification and referral program on the Cush platform and establish connections with suitable microloan providers and fintech partners in both the UK and Nigeria.
+
+---
+### Core Tasks:
+
+1.  **Activate Pre-Qualification Workflow:**
+    * Ensure the secure onboarding quiz/Typeform integration is fully functional.
+    * Implement the backend logic for pre-screening users based on collected data.
+    * Thoroughly test the entire pre-qualification process.
+
+2.  **Establish Partner Connections:**
+    * From the list below, prioritize and contact potential microloan providers and fintech partners in the UK and Nigeria. Focus on those with easy-to-integrate APIs and favorable commission/referral structures.
+    * **UK:**
+        * GC Business Finance
+        * Iwoca
+        * Lendwithcare
+        * SME Loans
+        * Triodos Bank
+    * **Nigeria:**
+        * Kuda Microfinance Bank
+        * Baobab Microfinance Bank
+        * AB Microfinance Bank
+        * Sparkle Microfinance Bank
+        * LAPO Microfinance Bank
+        * FINA Trust Microfinance Bank
+        * RenMoney Microfinance Bank
+        * Moneyfield Microfinance Bank
+    * **Fintech Partners (UK & Nigeria):**
+        * Flutterwave
+        * Fincra
+        * RemitONE
+        * LemFi
+    * Secure API Keys: Ensure all API keys are securely stored and managed.
+    * Test API Connections: Verify successful connections with partner APIs.
+    * Negotiate Terms: Negotiate commission/referral fees and other partnership terms.
+
+3.  **Implement Referral Tracking:**
+    * Develop a system to track referrals to each partner, including status updates.
+    * Create admin reports to monitor referral performance and revenue.
+
+4.  **Security & Compliance:**
+    * Ensure all data handling complies with GDPR, CCPA, and other relevant regulations.
+    * Verify that partner APIs are secure and compliant.
+
+5.  **User Experience:**
+    * Provide clear information to users about the loan referral program.
+    * Ensure a seamless user experience during the pre-qualification and referral process.
+
+### Output Requirements:
+
+* A list of confirmed microloan providers and fintech partners in the UK and Nigeria.
+* Documentation of the API integration for each partner.
+* The implemented referral tracking system and reporting functionality.
+* Confirmation of security and compliance measures.
