@@ -100,14 +100,10 @@ export default function OnboardingTutorial() {
   useEffect(() => {
     // Check if user has completed onboarding
     const hasCompletedOnboarding = localStorage.getItem('hasCompletedOnboarding');
-    const hasVisitedBefore = localStorage.getItem('hasVisitedCush');
     
-    if (!hasCompletedOnboarding && hasVisitedBefore) {
-      // Show onboarding after a short delay for returning users who haven't completed it
-      setTimeout(() => setIsVisible(true), 3000);
-    } else if (!hasVisitedBefore) {
-      // Show onboarding immediately for brand new users
-      setTimeout(() => setIsVisible(true), 1500);
+    if (!hasCompletedOnboarding) {
+      // Show onboarding for users who haven't completed it yet
+      setTimeout(() => setIsVisible(true), 2000);
     }
   }, []);
 

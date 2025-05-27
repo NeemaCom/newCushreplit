@@ -8,6 +8,7 @@ import {
   Settings,
   Wallet,
   Users,
+  Sparkles,
   FileText,
   Plane,
   DollarSign,
@@ -106,6 +107,20 @@ export default function Header() {
                 </div>
               </div>
             )}
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                localStorage.removeItem('hasCompletedOnboarding');
+                window.location.reload();
+              }}
+              className="text-blue-600 hover:text-blue-900 dark:text-blue-300 dark:hover:text-blue-100 mr-2"
+              title="Start Tutorial"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              Tutorial
+            </Button>
             
             <Button
               variant="ghost"
