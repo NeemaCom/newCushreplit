@@ -1,0 +1,59 @@
+Okay, this changes the strategy from a "deferred prompt" (best practice for PWA installation) to an immediate "pop-up" on first visit. While not the *ideal* PWA install prompt strategy for user experience (which Google's `beforeinstallprompt` event aims to avoid), it's a valid design choice for direct user engagement and a common request for general website features.
+
+Here's the revised prompt, specifically tailored for a *custom pop-up* on first visit, incorporating the "X" dismiss button, while still leveraging PWA concepts where applicable:
+
+---
+
+## AI Agent Prompt: Implement First-Visit PWA/Install Prompt (Custom Pop-up)
+
+**Objective:** Implement a custom, installable web app (PWA) prompt that appears as a pop-up on a user's **first visit** to the Cush website. This pop-up must provide a clear option for the user to refuse or dismiss it via an "X" button in the top-right corner, while offering the option to "install" the Cush web app to their home screen.
+
+---
+
+### Core Requirements & Implementation Steps:
+
+1.  **Web App Manifest File (`manifest.json`):**
+    * **Creation & Linking:** Ensure a complete and valid `manifest.json` file is correctly created and linked in the `<head>` of all relevant HTML pages (`<link rel="manifest" href="/manifest.json">`).
+    * **Key Properties:** Include: `name`, `short_name`, `start_url` (`/`), `display: standalone`, `background_color`, `theme_color`, and a comprehensive set of high-resolution `icons` (192x192, 512x512, SVG).
+
+2.  **Service Worker Implementation:**
+    * **Registration:** Register a robust `service-worker.js` that covers the application's scope.
+    * **Caching Strategy:** Implement an **App Shell Caching** strategy (e.g., cache-first or Stale-While-Revalidate) for core UI assets (HTML, CSS, JS, icons) to enable instant loading and basic offline functionality.
+    * **Offline Fallback:** Provide a graceful offline experience with a custom offline page.
+    * **Updates:** Include logic for updating the service worker.
+
+3.  **Custom Pop-up UI & Logic (First Visit Trigger):**
+    * **Trigger Condition:** The pop-up *must* appear only on a user's **absolute first visit** to the site. This can be managed using a `localStorage` flag or a cookie (e.g., `hasVisitedCush = true`).
+    * **Pop-up Design:**
+        * **Visual:** Design a clear, modern, non-obtrusive modal pop-up that overlays content but doesn't block the entire screen.
+        * **Title:** Catchy and clear (e.g., "Get the Cush App Experience," "Install Cush for Quick Access").
+        * **Message:** Briefly explain the benefits (e.g., "Add Cush to your home screen for instant access, faster loading, and a native app feel!").
+        * **Call-to-Action (CTA) Button:** A prominent button to initiate the install (e.g., "Install Cush," "Add to Home Screen").
+        * **Dismiss Button:** A clear "**X**" icon in the **top-right corner** of the pop-up that allows the user to dismiss it.
+    * **Dismissal Logic:**
+        * **"X" Dismiss:** When the "X" button is clicked, the pop-up should disappear, and the `localStorage` flag (or cookie) should be set to prevent it from showing again on subsequent visits.
+        * **"Install" Click:** If the user clicks the "Install" CTA, proceed with the PWA installation process (see step 4).
+
+4.  **PWA Installation Trigger (`beforeinstallprompt` & Custom Event Handling):**
+    * **Event Listener:** Listen for the browser's `beforeinstallprompt` event. Crucially, **store this event** but do *not* trigger the native prompt immediately.
+    * **Custom Button Action:** When the user clicks *your custom pop-up's "Install" button*:
+        * Call `prompt()` on the stored `beforeinstallprompt` event object.
+        * Log the outcome (user accepted/dismissed native prompt).
+        * Dismiss your custom pop-up.
+    * **Fallback for Unsupported Browsers:** If `beforeinstallprompt` is not available (e.g., some iOS browsers), provide instructions within the pop-up on how to manually "Add to Home Screen" (e.g., "Tap the Share icon [icon] and 'Add to Home Screen'").
+
+5.  **Post-Installation Experience:**
+    * Once installed, the app should launch in `standalone` mode, without browser UI.
+    * Provide a subtle, one-time notification within the app acknowledging the successful installation and welcoming them to the PWA experience.
+
+### FAANG Engineering Principles (Prioritized):
+
+* **Robust First-Visit Detection:** Ensure the pop-up truly only shows on the first visit to avoid user frustration.
+* **Performance:** The pop-up and its underlying logic must load quickly without impacting Core Web Vitals.
+* **A/B Testing Readiness:** Design the pop-up display logic to be easily configurable for A/B testing different messages, timings (if you later choose to defer slightly), or button placements.
+* **User Consent & Control:** Explicitly provide the "X" dismiss option, respecting user choice. Avoid aggressive re-prompts.
+* **Comprehensive Logging:** Log all interactions with the pop-up (shown, dismissed via X, install clicked, native prompt accepted, native prompt dismissed) for analytics and optimization.
+* **Cross-Browser/Device Compatibility:** Rigorously test the pop-up behavior and PWA installation process across major desktop and mobile browsers, including specific considerations for iOS Safari.
+* **Security:** Ensure no sensitive information is exposed or compromised during the PWA installation process.
+
+---

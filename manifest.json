@@ -1,0 +1,42 @@
+{
+  "name": "Cush - Global Immigration & Financial Services",
+  "short_name": "Cush",
+  "description": "Financial solutions for expatriates and digital nomads worldwide",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#16a34a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["finance", "productivity", "business"],
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/api/placeholder/192/192",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/api/placeholder/512/512",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Wallet",
+      "short_name": "Wallet",
+      "description": "Access your multi-currency wallet",
+      "url": "/wallet"
+    },
+    {
+      "name": "HomeBase",
+      "short_name": "Housing",
+      "description": "Find housing and roommates",
+      "url": "/homebase"
+    }
+  ]
+}
