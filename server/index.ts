@@ -1,10 +1,46 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { 
+  securityHeaders, 
+  apiRateLimit, 
+  validateRequest,
+  securityLogger,
+  maskSensitiveData 
+} from "./security";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
+// Apply enterprise security headers first
+app.use(securityHeaders);
+
+// Trust proxy for accurate IP detection
+app.set('trust proxy', 1);
+
+// Apply rate limiting to API routes
+app.use('/api/', apiRateLimit);
+
+// Secure body parsing with limits
+app.use(express.json({ 
+  limit: "10mb",
+  verify: (req, res, buffer) => {
+    if (buffer.length > 1024 * 1024) { // Log large payloads
+      securityLogger.logSuspiciousActivity(
+        req.ip || 'unknown',
+        'LARGE_PAYLOAD',
+        { size: buffer.length, path: req.path }
+      );
+    }
+  }
+}));
+app.use(express.urlencoded({ 
+  extended: false, 
+  limit: "10mb",
+  parameterLimit: 100 
+}));
+
+// Request validation and sanitization
+app.use(validateRequest);
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -39,12 +75,47 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  // Add health check endpoint
+  app.get('/health', (req, res) => {
+    res.json({ 
+      status: 'healthy', 
+      timestamp: new Date().toISOString(),
+      security: 'enterprise-grade'
+    });
+  });
+
+  app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
+    const ip = req.ip || req.connection.remoteAddress;
 
-    res.status(status).json({ message });
-    throw err;
+    // Mask sensitive data for logging
+    const sanitizedBody = maskSensitiveData(req.body);
+    
+    // Log security-relevant errors
+    if (status === 401 || status === 403 || status === 429) {
+      securityLogger.logSecurityEvent('ERROR_RESPONSE', {
+        status,
+        message,
+        ip,
+        path: req.path,
+        method: req.method,
+        userAgent: req.get('User-Agent'),
+        body: sanitizedBody
+      }, status === 429 ? 'high' : 'medium');
+    }
+
+    log(`Security Error ${status}: ${message} from ${ip}`);
+    
+    // Don't leak sensitive error details in production
+    const responseMessage = process.env.NODE_ENV === 'production' && status >= 500
+      ? 'Internal server error'
+      : message;
+
+    res.status(status).json({ 
+      message: responseMessage,
+      timestamp: new Date().toISOString()
+    });
   });
 
   // importantly only setup vite in development and after
