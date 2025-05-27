@@ -153,6 +153,14 @@ export default function AdvancedDashboard() {
                 <Badge className="bg-blue-100 text-blue-800 text-xs px-2 py-1">Enhanced</Badge>
               </a>
               
+              <a href="/financial-services" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
+                <div className="flex items-center space-x-3">
+                  <Building className="w-5 h-5" />
+                  <span>Educational Payments</span>
+                </div>
+                <Badge className="bg-green-100 text-green-800 text-xs px-2 py-1">New</Badge>
+              </a>
+              
               <a href="/loans" className="flex items-center justify-between px-3 py-2.5 text-cush-gray-700 hover:bg-cush-gray-25 hover:text-cush-gray-900 rounded-lg transition-all duration-200 mb-1">
                 <div className="flex items-center space-x-3">
                   <Building className="w-5 h-5" />
