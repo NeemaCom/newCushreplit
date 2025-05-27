@@ -435,6 +435,46 @@ export class DatabaseStorage implements IStorage {
       return profile;
     }
   }
+  // Educational payment operations
+  async getUserEducationalPayments(userId: string): Promise<EducationalPayment[]> {
+    return await db
+      .select()
+      .from(educationalPayments)
+      .where(eq(educationalPayments.userId, userId))
+      .orderBy(desc(educationalPayments.createdAt));
+  }
+
+  async createEducationalPayment(payment: InsertEducationalPayment): Promise<EducationalPayment> {
+    const [newPayment] = await db.insert(educationalPayments).values(payment).returning();
+    return newPayment;
+  }
+
+  // Credit builder operations
+  async getUserCreditBuilders(userId: string): Promise<CreditBuilder[]> {
+    return await db
+      .select()
+      .from(creditBuilders)
+      .where(eq(creditBuilders.userId, userId))
+      .orderBy(desc(creditBuilders.createdAt));
+  }
+
+  async createCreditBuilder(builder: InsertCreditBuilder): Promise<CreditBuilder> {
+    const [newBuilder] = await db.insert(creditBuilders).values(builder).returning();
+    return newBuilder;
+  }
+
+  async getUserCreditPayments(userId: string): Promise<CreditPayment[]> {
+    return await db
+      .select()
+      .from(creditPayments)
+      .where(eq(creditPayments.userId, userId))
+      .orderBy(desc(creditPayments.createdAt));
+  }
+
+  async createCreditPayment(payment: InsertCreditPayment): Promise<CreditPayment> {
+    const [newPayment] = await db.insert(creditPayments).values(payment).returning();
+    return newPayment;
+  }
 }
 
 export const storage = new DatabaseStorage();
