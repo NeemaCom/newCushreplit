@@ -280,6 +280,63 @@ export const userProfiles = pgTable("user_profiles", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Educational Fee Payments
+export const educationalPayments = pgTable("educational_payments", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  paymentType: varchar("payment_type").notNull(), // 'tuition', 'sevis', 'wes'
+  institutionName: varchar("institution_name").notNull(),
+  studentId: varchar("student_id"),
+  amount: varchar("amount").notNull(),
+  currency: varchar("currency").notNull().default("USD"),
+  status: varchar("status").notNull().default("pending"), // 'pending', 'processing', 'completed', 'failed'
+  paymentMethod: varchar("payment_method"), // 'bank_transfer', 'card', 'wallet'
+  transactionId: varchar("transaction_id"),
+  paymentReference: varchar("payment_reference"),
+  dueDate: timestamp("due_date"),
+  completedAt: timestamp("completed_at"),
+  metadata: jsonb("metadata"), // Additional payment details
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Credit Builder Solutions
+export const creditBuilders = pgTable("credit_builders", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  productType: varchar("product_type").notNull(), // 'secured_card', 'credit_builder_loan', 'authorized_user'
+  providerName: varchar("provider_name").notNull(),
+  accountNumber: varchar("account_number"),
+  creditLimit: varchar("credit_limit"),
+  interestRate: varchar("interest_rate"),
+  monthlyPayment: varchar("monthly_payment"),
+  status: varchar("status").notNull().default("active"), // 'active', 'closed', 'pending_approval'
+  applicationDate: timestamp("application_date").defaultNow(),
+  approvalDate: timestamp("approval_date"),
+  currentBalance: varchar("current_balance").default("0.00"),
+  paymentHistory: jsonb("payment_history"), // Track payment history
+  creditScore: varchar("credit_score"), // User's current credit score
+  scoreProvider: varchar("score_provider"), // 'experian', 'equifax', 'transunion'
+  lastScoreUpdate: timestamp("last_score_update"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Credit Builder Payments
+export const creditPayments = pgTable("credit_payments", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  creditBuilderId: integer("credit_builder_id").references(() => creditBuilders.id),
+  amount: varchar("amount").notNull(),
+  paymentDate: timestamp("payment_date").defaultNow(),
+  dueDate: timestamp("due_date").notNull(),
+  status: varchar("status").notNull().default("pending"), // 'pending', 'completed', 'late', 'missed'
+  paymentMethod: varchar("payment_method"),
+  transactionId: varchar("transaction_id"),
+  isAutoPay: boolean("is_auto_pay").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(userProfiles, {
@@ -296,6 +353,9 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   documentationOrders: many(documentationOrders),
   flightBookings: many(flightBookings),
   loanApplications: many(loanApplications),
+  educationalPayments: many(educationalPayments),
+  creditBuilders: many(creditBuilders),
+  creditPayments: many(creditPayments),
 }));
 
 export const mentorsRelations = relations(mentors, ({ many }) => ({
@@ -516,6 +576,25 @@ export const updateVirtualCardSchema = createInsertSchema(virtualCards).omit({
   updatedAt: true,
 }).partial();
 
+// Educational Payment schemas
+export const insertEducationalPaymentSchema = createInsertSchema(educationalPayments).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Credit Builder schemas
+export const insertCreditBuilderSchema = createInsertSchema(creditBuilders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertCreditPaymentSchema = createInsertSchema(creditPayments).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -558,3 +637,13 @@ export type UpdateUserProfile = z.infer<typeof updateUserProfileSchema>;
 export type VirtualCard = typeof virtualCards.$inferSelect;
 export type InsertVirtualCard = z.infer<typeof insertVirtualCardSchema>;
 export type UpdateVirtualCard = z.infer<typeof updateVirtualCardSchema>;
+
+// Educational Payment Types
+export type EducationalPayment = typeof educationalPayments.$inferSelect;
+export type InsertEducationalPayment = z.infer<typeof insertEducationalPaymentSchema>;
+
+// Credit Builder Types
+export type CreditBuilder = typeof creditBuilders.$inferSelect;
+export type InsertCreditBuilder = z.infer<typeof insertCreditBuilderSchema>;
+export type CreditPayment = typeof creditPayments.$inferSelect;
+export type InsertCreditPayment = z.infer<typeof insertCreditPaymentSchema>;
