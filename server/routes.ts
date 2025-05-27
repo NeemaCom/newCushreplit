@@ -2,6 +2,14 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { 
+  authRateLimit, 
+  paymentRateLimit, 
+  strictRateLimit,
+  securityLogger,
+  EncryptionService,
+  enhancedAuth
+} from "./security";
 import { getImmigrationAssistance, analyzeTransactionRisk } from "./openai";
 import { transferSchema, flightSearchSchema } from "@shared/schema";
 import { z } from "zod";
@@ -18,13 +26,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Auth routes with enhanced security
+  app.get('/api/auth/user', authRateLimit, enhancedAuth, isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
+      
+      // Log successful auth access
+      securityLogger.logSecurityEvent('USER_ACCESS', {
+        userId,
+        ip: req.ip,
+        userAgent: req.get('User-Agent')
+      }, 'low');
+      
       res.json(user);
     } catch (error) {
+      securityLogger.logFailedAuth(
+        req.ip || 'unknown',
+        req.get('User-Agent') || 'unknown',
+        'Failed to fetch user data'
+      );
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
     }
