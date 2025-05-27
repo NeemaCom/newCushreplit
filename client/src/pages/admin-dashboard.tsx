@@ -487,6 +487,21 @@ export default function AdminDashboard() {
             </Card>
           </TabsContent>
 
+          {/* Security Tab - Interactive Threat Heatmap */}
+          <TabsContent value="security" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-cush-gray-900 mb-2 flex items-center">
+                <Shield className="w-6 h-6 mr-3 text-red-500" />
+                Security Operations Center
+              </h2>
+              <p className="text-cush-gray-600">
+                Real-time threat visualization and security monitoring dashboard
+              </p>
+            </div>
+            
+            <SecurityHeatmap />
+          </TabsContent>
+
           {/* System Tab */}
           <TabsContent value="system" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
