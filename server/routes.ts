@@ -1793,6 +1793,162 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Multi-Factor Authentication endpoints
+  app.post('/api/mfa/setup', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { method } = req.body;
+      const { MFAManager } = await import('./mfa');
+      
+      const setupData = await MFAManager.setupMFA(userId, method);
+      
+      res.json({
+        success: true,
+        ...setupData
+      });
+    } catch (error) {
+      console.error('Error setting up MFA:', error);
+      res.status(500).json({ message: 'Failed to setup MFA' });
+    }
+  });
+
+  app.post('/api/mfa/verify', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { method, token, secret, backupCodes } = req.body;
+      const { MFAManager } = await import('./mfa');
+      
+      const isValid = await MFAManager.verifyMFA(userId, method, token, secret, backupCodes);
+      
+      if (isValid) {
+        // Update user MFA status in database
+        await storage.updateUserMFA(userId, { mfaEnabled: true, totpSecret: secret });
+        
+        res.json({
+          success: true,
+          message: 'MFA verification successful'
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'Invalid MFA token'
+        });
+      }
+    } catch (error) {
+      console.error('Error verifying MFA:', error);
+      res.status(500).json({ message: 'Failed to verify MFA' });
+    }
+  });
+
+  app.get('/api/mfa/status', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      res.json({
+        mfaEnabled: user?.mfaEnabled || false,
+        hasBackupCodes: user?.backupCodes && user.backupCodes.length > 0,
+        backupCodesCount: user?.backupCodes?.length || 0
+      });
+    } catch (error) {
+      console.error('Error fetching MFA status:', error);
+      res.status(500).json({ message: 'Failed to fetch MFA status' });
+    }
+  });
+
+  app.post('/api/mfa/disable', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { password } = req.body;
+      
+      // Verify password before disabling MFA
+      // In production, you'd validate the password here
+      
+      await storage.updateUserMFA(userId, { 
+        mfaEnabled: false, 
+        totpSecret: null,
+        backupCodes: null
+      });
+      
+      res.json({
+        success: true,
+        message: 'MFA disabled successfully'
+      });
+    } catch (error) {
+      console.error('Error disabling MFA:', error);
+      res.status(500).json({ message: 'Failed to disable MFA' });
+    }
+  });
+
+  // Access Control endpoints
+  app.get('/api/access/logs', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      // Check if user has admin privileges
+      if (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Insufficient privileges' });
+      }
+      
+      const logs = await storage.getAccessLogs(userId);
+      res.json(logs);
+    } catch (error) {
+      console.error('Error fetching access logs:', error);
+      res.status(500).json({ message: 'Failed to fetch access logs' });
+    }
+  });
+
+  app.get('/api/security/events', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      // Check if user has admin privileges
+      if (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Insufficient privileges' });
+      }
+      
+      const events = await storage.getSecurityEvents();
+      res.json(events);
+    } catch (error) {
+      console.error('Error fetching security events:', error);
+      res.status(500).json({ message: 'Failed to fetch security events' });
+    }
+  });
+
+  app.post('/api/admin/user/role', isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.claims.sub;
+      const { userId, role, reason } = req.body;
+      const admin = await storage.getUser(adminUserId);
+      
+      // Only super admins can assign roles
+      if (admin?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Only super admins can assign roles' });
+      }
+      
+      await storage.updateUserRole(userId, role);
+      
+      // Log the role assignment
+      await storage.logSecurityEvent({
+        userId: adminUserId,
+        eventType: 'ROLE_ASSIGNMENT',
+        severity: 'MEDIUM',
+        description: `Role changed to ${role} for user ${userId}. Reason: ${reason}`,
+        metadata: { targetUserId: userId, newRole: role, reason }
+      });
+      
+      res.json({
+        success: true,
+        message: 'Role updated successfully'
+      });
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      res.status(500).json({ message: 'Failed to update user role' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

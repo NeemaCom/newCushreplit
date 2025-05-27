@@ -724,6 +724,94 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return newLog;
   }
+
+  // MFA and Security Management Methods
+  async updateUserMFA(userId: string, mfaData: {
+    mfaEnabled?: boolean;
+    totpSecret?: string | null;
+    backupCodes?: string[] | null;
+  }): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        mfaEnabled: mfaData.mfaEnabled,
+        totpSecret: mfaData.totpSecret,
+        backupCodes: mfaData.backupCodes,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updateUserRole(userId: string, role: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        role,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async logSecurityEvent(eventData: {
+    userId?: string;
+    eventType: string;
+    severity: string;
+    description?: string;
+    metadata?: any;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<void> {
+    await db
+      .insert(securityEvents)
+      .values({
+        userId: eventData.userId,
+        eventType: eventData.eventType,
+        severity: eventData.severity,
+        description: eventData.description,
+        metadata: eventData.metadata,
+        ipAddress: eventData.ipAddress,
+        userAgent: eventData.userAgent
+      });
+  }
+
+  async getSecurityEvents(): Promise<SecurityEvent[]> {
+    return await db
+      .select()
+      .from(securityEvents)
+      .orderBy(desc(securityEvents.timestamp))
+      .limit(50);
+  }
+
+  async getAccessLogs(userId?: string): Promise<AccessLog[]> {
+    const query = db
+      .select()
+      .from(accessLogs)
+      .orderBy(desc(accessLogs.timestamp))
+      .limit(100);
+
+    if (userId) {
+      return await query.where(eq(accessLogs.userId, userId));
+    }
+
+    return await query;
+  }
+
+  async logAccess(accessData: {
+    userId?: string;
+    action: string;
+    resource: string;
+    ipAddress?: string;
+    userAgent?: string;
+    success: boolean;
+  }): Promise<void> {
+    await db
+      .insert(accessLogs)
+      .values(accessData);
+  }
 }
 
 export const storage = new DatabaseStorage();

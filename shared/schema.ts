@@ -32,6 +32,14 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  role: varchar("role").default("USER").notNull(),
+  mfaEnabled: boolean("mfa_enabled").default(false),
+  totpSecret: varchar("totp_secret"),
+  backupCodes: text("backup_codes").array(),
+  lastLoginAt: timestamp("last_login_at"),
+  loginAttempts: integer("login_attempts").default(0),
+  accountLocked: boolean("account_locked").default(false),
+  lockUntil: timestamp("lock_until"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -825,8 +833,51 @@ export const insertConciergeAuditSchema = createInsertSchema(conciergeAuditLog).
 });
 
 // Types
+// MFA Sessions table
+export const mfaSessions = pgTable("mfa_sessions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  sessionId: varchar("session_id").notNull(),
+  method: varchar("method").notNull(),
+  verified: boolean("verified").default(false),
+  attempts: integer("attempts").default(0),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Access Control Logs table
+export const accessLogs = pgTable("access_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  action: varchar("action").notNull(),
+  resource: varchar("resource").notNull(),
+  ipAddress: varchar("ip_address"),
+  userAgent: varchar("user_agent"),
+  success: boolean("success").notNull(),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+// Security Events table
+export const securityEvents = pgTable("security_events", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  eventType: varchar("event_type").notNull(),
+  severity: varchar("severity").notNull(),
+  description: text("description"),
+  metadata: jsonb("metadata"),
+  ipAddress: varchar("ip_address"),
+  userAgent: varchar("user_agent"),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type MFASession = typeof mfaSessions.$inferSelect;
+export type InsertMFASession = typeof mfaSessions.$inferInsert;
+export type AccessLog = typeof accessLogs.$inferSelect;
+export type InsertAccessLog = typeof accessLogs.$inferInsert;
+export type SecurityEvent = typeof securityEvents.$inferSelect;
+export type InsertSecurityEvent = typeof securityEvents.$inferInsert;
 export type Wallet = typeof wallets.$inferSelect;
 export type InsertWallet = z.infer<typeof insertWalletSchema>;
 export type Transaction = typeof transactions.$inferSelect;
