@@ -1,0 +1,27 @@
+Implement Loan Pre-Qualification & Referral Program
+Objective: Integrate a secure and scalable loan pre-qualification and referral program into the Cush platform. This feature will pre-screen users for credit needs and facilitate referrals to external microloan providers or fintech partners, generating revenue via referral/origination fees.
+
+Core Requirements & Integration:
+User Pre-Qualification Workflow:
+
+Secure Onboarding Quiz/Typeform Integration: Implement a user-friendly and highly secure onboarding quiz or integrate a Typeform (or similar secure third-party form builder) to capture essential user data for pre-screening.
+Data Security: Emphasize that all data collected during this pre-qualification process must be handled with the utmost security, complying with relevant data privacy regulations (e.g., GDPR, CCPA) and encryption standards, both in transit and at rest.
+Data Minimization: Only collect data absolutely necessary for pre-qualification.
+Logic for Pre-Screening: Define clear, configurable rules and logic for pre-screening users based on the collected data. This logic should be backend-driven to ensure security and prevent client-side manipulation.
+Partner Referral System:
+
+Secure Partner API Integrations: Develop robust and secure integrations with partner APIs for seamless referral of pre-qualified users.
+Authentication & Authorization: Use strong API key management, OAuth 2.0, or other secure authentication mechanisms as required by partner APIs. Secrets must be securely stored and accessed.
+Error Handling & Idempotency: Implement comprehensive error handling, retry mechanisms, and ensure idempotency for all referral API calls to prevent duplicate submissions or missed referrals.
+Data Mapping & Transformation: Clearly define how Cush's user data maps to partner API requirements and implement secure data transformation.
+Referral Tracking: Implement a reliable system to track each referral, including its status (e.g., pending, accepted, rejected, loan disbursed) for accurate revenue reconciliation.
+Revenue Model Implementation:
+
+Fee Tracking: Develop functionality to track referral or origination fees ($5–$50 per user or % of loan) based on successful conversions reported by partners.
+Reporting: Create secure, admin-only dashboards or reports to monitor referral performance, conversion rates, and accrued revenue.
+FAANG Engineering Principles (Prioritized):
+Security by Design: Every component, from the quiz input to partner API calls, must be designed with security as the primary consideration. This includes strong input validation, output encoding, and protection against common web vulnerabilities.
+Data Privacy: Strict adherence to data minimization and privacy-preserving techniques. Users must be fully aware and explicitly consent to data sharing for referral purposes.
+Scalability & Resilience: The system must be able to handle a growing volume of pre-qualifications and referrals without performance degradation. Implement robust logging, monitoring, and alerting for the entire referral pipeline.
+Auditability: Ensure comprehensive logging of all pre-qualification steps, referral attempts, and partner responses for troubleshooting, compliance, and revenue verification.
+Extensibility: The architecture should allow for easy integration of new microloan providers or fintech partners in the future without significant refactoring.

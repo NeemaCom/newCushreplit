@@ -595,6 +595,122 @@ export const insertCreditPaymentSchema = createInsertSchema(creditPayments).omit
   createdAt: true,
 });
 
+// Loan Pre-Qualification Schema
+export const loanPreQualifications = pgTable("loan_pre_qualifications", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  status: varchar("status").notNull().default("in_progress"), // in_progress, qualified, not_qualified, referred
+  creditScore: varchar("credit_score"),
+  monthlyIncome: varchar("monthly_income"),
+  employmentStatus: varchar("employment_status"),
+  loanPurpose: varchar("loan_purpose"),
+  requestedAmount: varchar("requested_amount"),
+  qualificationScore: integer("qualification_score"), // 0-100 internal scoring
+  qualifiedLoanTypes: jsonb("qualified_loan_types"), // array of qualified loan products
+  riskCategory: varchar("risk_category"), // low, medium, high
+  preQualificationData: jsonb("pre_qualification_data"), // encrypted sensitive data
+  consentGiven: boolean("consent_given").default(false),
+  privacyPolicyAccepted: boolean("privacy_policy_accepted").default(false),
+  dataRetentionExpiry: timestamp("data_retention_expiry"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Partner Loan Providers
+export const loanPartners = pgTable("loan_partners", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  apiEndpoint: varchar("api_endpoint"),
+  isActive: boolean("is_active").default(true),
+  supportedLoanTypes: jsonb("supported_loan_types"),
+  minCreditScore: integer("min_credit_score"),
+  maxLoanAmount: varchar("max_loan_amount"),
+  referralFeeStructure: jsonb("referral_fee_structure"), // fee rates and structure
+  apiKeyId: varchar("api_key_id"), // reference to secure key storage
+  partnerCode: varchar("partner_code").unique(),
+  webhookUrl: varchar("webhook_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Loan Referrals
+export const loanReferrals = pgTable("loan_referrals", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id),
+  preQualificationId: integer("pre_qualification_id").references(() => loanPreQualifications.id),
+  partnerId: integer("partner_id").references(() => loanPartners.id),
+  referralCode: varchar("referral_code").unique().notNull(),
+  status: varchar("status").notNull().default("pending"), // pending, submitted, approved, rejected, funded, cancelled
+  partnerReferralId: varchar("partner_referral_id"), // partner's tracking ID
+  loanAmount: varchar("loan_amount"),
+  interestRate: varchar("interest_rate"),
+  loanTerm: varchar("loan_term"),
+  expectedFee: varchar("expected_fee"),
+  actualFee: varchar("actual_fee"),
+  feeStatus: varchar("fee_status").default("pending"), // pending, earned, paid
+  submittedAt: timestamp("submitted_at"),
+  responseAt: timestamp("response_at"),
+  fundedAt: timestamp("funded_at"),
+  partnerResponse: jsonb("partner_response"),
+  errorDetails: jsonb("error_details"),
+  retryCount: integer("retry_count").default(0),
+  lastRetryAt: timestamp("last_retry_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Revenue Tracking
+export const referralRevenue = pgTable("referral_revenue", {
+  id: serial("id").primaryKey(),
+  referralId: integer("referral_id").references(() => loanReferrals.id),
+  partnerId: integer("partner_id").references(() => loanPartners.id),
+  feeType: varchar("fee_type").notNull(), // origination, referral, percentage
+  feeAmount: varchar("fee_amount").notNull(),
+  currency: varchar("currency").default("USD"),
+  status: varchar("status").default("pending"), // pending, earned, paid, disputed
+  earnedAt: timestamp("earned_at"),
+  paidAt: timestamp("paid_at"),
+  paymentReference: varchar("payment_reference"),
+  reconciliationData: jsonb("reconciliation_data"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Validation schemas for loan pre-qualification
+export const loanPreQualificationSchema = z.object({
+  monthlyIncome: z.string().min(1, "Monthly income is required"),
+  employmentStatus: z.enum(["employed", "self_employed", "unemployed", "student", "retired"]),
+  loanPurpose: z.enum(["business", "education", "personal", "debt_consolidation", "home_improvement"]),
+  requestedAmount: z.string().min(1, "Loan amount is required"),
+  creditScore: z.string().optional(),
+  consentGiven: z.boolean().refine(val => val === true, "Consent is required"),
+  privacyPolicyAccepted: z.boolean().refine(val => val === true, "Privacy policy acceptance is required"),
+});
+
+export const insertLoanPreQualificationSchema = createInsertSchema(loanPreQualifications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertLoanPartnerSchema = createInsertSchema(loanPartners).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertLoanReferralSchema = createInsertSchema(loanReferrals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertReferralRevenueSchema = createInsertSchema(referralRevenue).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -647,3 +763,13 @@ export type CreditBuilder = typeof creditBuilders.$inferSelect;
 export type InsertCreditBuilder = z.infer<typeof insertCreditBuilderSchema>;
 export type CreditPayment = typeof creditPayments.$inferSelect;
 export type InsertCreditPayment = z.infer<typeof insertCreditPaymentSchema>;
+
+// Loan Pre-Qualification & Referral Types
+export type LoanPreQualification = typeof loanPreQualifications.$inferSelect;
+export type InsertLoanPreQualification = z.infer<typeof insertLoanPreQualificationSchema>;
+export type LoanPartner = typeof loanPartners.$inferSelect;
+export type InsertLoanPartner = z.infer<typeof insertLoanPartnerSchema>;
+export type LoanReferral = typeof loanReferrals.$inferSelect;
+export type InsertLoanReferral = z.infer<typeof insertLoanReferralSchema>;
+export type ReferralRevenue = typeof referralRevenue.$inferSelect;
+export type InsertReferralRevenue = z.infer<typeof insertReferralRevenueSchema>;
