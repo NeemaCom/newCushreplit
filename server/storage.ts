@@ -197,6 +197,37 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  // MFA operations
+  async updateUserMFASecret(userId: string, secret: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ totpSecret: secret, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async enableUserMFA(userId: string, backupCodes: string[]): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        mfaEnabled: true, 
+        backupCodes: backupCodes,
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async disableUserMFA(userId: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        mfaEnabled: false,
+        totpSecret: null,
+        backupCodes: null,
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, userId));
+  }
+
   // Wallet operations
   async getUserWallets(userId: string): Promise<Wallet[]> {
     return await db.select().from(wallets).where(eq(wallets.userId, userId));

@@ -5,6 +5,7 @@ import {
   User, 
   LogOut, 
   Shield,
+  Settings,
   Wallet,
   Users,
   FileText,
@@ -36,6 +37,7 @@ export default function Header() {
     { href: "/imisi", label: "Imisi AI", icon: Bot },
     { href: "/concierge", label: "Concierge", icon: Crown },
     { href: "/security", label: "Security", icon: Shield },
+    { href: "/security-settings", label: "Security Settings", icon: Settings },
   ];
 
   // Add admin items for administrators

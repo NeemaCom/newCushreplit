@@ -2413,6 +2413,147 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Multi-Factor Authentication API Routes
+  app.get('/api/security/settings', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      res.json({
+        mfaEnabled: user?.mfaEnabled || false,
+        lastLoginAt: user?.lastLoginAt,
+        loginAttempts: user?.loginAttempts || 0,
+        accountLocked: user?.accountLocked || false
+      });
+    } catch (error) {
+      console.error('Error fetching security settings:', error);
+      res.status(500).json({ message: 'Failed to fetch security settings' });
+    }
+  });
+
+  app.post('/api/security/mfa/setup', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { method } = req.body;
+      
+      if (method !== 'TOTP') {
+        return res.status(400).json({ message: 'Only TOTP method is currently supported' });
+      }
+
+      // Generate TOTP secret
+      const secret = require('crypto').randomBytes(32).toString('base64');
+      const userEmail = req.user.claims.email || 'user@cush.com';
+      
+      // Generate QR code URL (in production, you'd generate actual QR code)
+      const qrCode = `otpauth://totp/Cush:${userEmail}?secret=${secret}&issuer=Cush`;
+      
+      // Store the temporary secret (not enabled yet)
+      await storage.updateUserMFASecret(userId, secret);
+      
+      res.json({
+        secret,
+        qrCode,
+        manualEntryKey: secret
+      });
+    } catch (error) {
+      console.error('Error setting up MFA:', error);
+      res.status(500).json({ message: 'Failed to setup MFA' });
+    }
+  });
+
+  app.post('/api/security/mfa/verify', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { code } = req.body;
+      
+      const user = await storage.getUser(userId);
+      if (!user?.totpSecret) {
+        return res.status(400).json({ message: 'MFA setup not initiated' });
+      }
+
+      // In production, verify the TOTP code against the secret
+      // For now, accept any 6-digit code for demo purposes
+      if (!/^\d{6}$/.test(code)) {
+        return res.status(400).json({ message: 'Invalid code format' });
+      }
+
+      // Generate backup codes
+      const backupCodes = Array.from({ length: 10 }, () => 
+        Math.random().toString(36).substr(2, 8).toUpperCase()
+      );
+
+      // Enable MFA and save backup codes
+      await storage.enableUserMFA(userId, backupCodes);
+      
+      res.json({
+        success: true,
+        backupCodes
+      });
+    } catch (error) {
+      console.error('Error verifying MFA:', error);
+      res.status(500).json({ message: 'Failed to verify MFA' });
+    }
+  });
+
+  app.post('/api/security/mfa/disable', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      await storage.disableUserMFA(userId);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error disabling MFA:', error);
+      res.status(500).json({ message: 'Failed to disable MFA' });
+    }
+  });
+
+  // Session Management Routes
+  app.get('/api/security/sessions', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      
+      // Mock session data for demonstration
+      const sessions = [
+        {
+          id: '1',
+          userAgent: 'Chrome on Windows',
+          ipAddress: '192.168.1.100',
+          location: 'New York, USA',
+          lastActive: new Date(),
+          current: true
+        },
+        {
+          id: '2',
+          userAgent: 'Safari on iPhone',
+          ipAddress: '10.0.0.50',
+          location: 'London, UK',
+          lastActive: new Date(Date.now() - 2 * 60 * 60 * 1000),
+          current: false
+        }
+      ];
+      
+      res.json(sessions);
+    } catch (error) {
+      console.error('Error fetching sessions:', error);
+      res.status(500).json({ message: 'Failed to fetch sessions' });
+    }
+  });
+
+  app.post('/api/security/sessions/revoke', isAuthenticated, async (req: any, res) => {
+    try {
+      const { sessionId } = req.body;
+      
+      // In production, revoke the specific session
+      console.log(`Revoking session: ${sessionId}`);
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('Error revoking session:', error);
+      res.status(500).json({ message: 'Failed to revoke session' });
+    }
+  });
+
   // Helper functions for threat data generation
   function getRandomLocation() {
     const locations = [

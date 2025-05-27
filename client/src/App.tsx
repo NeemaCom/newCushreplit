@@ -22,6 +22,7 @@ import FinancialServices from "@/pages/financial-services";
 import Concierge from "@/pages/concierge";
 import ComplianceDashboard from "@/pages/compliance-dashboard";
 import SecurityDashboard from "@/pages/security-dashboard";
+import SecuritySettings from "@/pages/security-settings";
 import HomeBase from "@/pages/homebase";
 
 function Router() {
@@ -69,6 +70,7 @@ function Router() {
           <Route path="/concierge" component={Concierge} />
           <Route path="/compliance" component={ComplianceDashboard} />
           <Route path="/security" component={SecurityDashboard} />
+          <Route path="/security-settings" component={SecuritySettings} />
           <Route path="/admin" component={AdminDashboard} />
           <Route component={NotFound} />
         </>
