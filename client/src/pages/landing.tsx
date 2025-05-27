@@ -34,13 +34,14 @@ import {
   Smartphone
 } from "lucide-react";
 import EnhancedSignupModal from "@/components/enhanced-signup-modal";
+import DemoWalkthrough from "@/components/demo-walkthrough";
 import cushLogo from "@assets/Logo + Typeface_PNG (4).png";
 
 export default function Landing() {
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [showDemoWalkthrough, setShowDemoWalkthrough] = useState(false);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [currentMentor, setCurrentMentor] = useState(0);
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   const testimonials = [
     {
@@ -297,7 +298,7 @@ export default function Landing() {
                   variant="outline" 
                   size="lg" 
                   className="border-2 border-gray-300 hover:border-blue-600 hover:text-blue-600 transition-all duration-300 text-lg px-8 py-4"
-                  onClick={() => setIsVideoPlaying(true)}
+                  onClick={() => setShowDemoWalkthrough(true)}
                 >
                   <Play className="mr-2 w-5 h-5" />
                   Watch Demo
@@ -821,6 +822,12 @@ export default function Landing() {
         isOpen={showSignupModal} 
         onClose={() => setShowSignupModal(false)}
         onComplete={() => setShowSignupModal(false)}
+      />
+
+      {/* Demo Walkthrough */}
+      <DemoWalkthrough 
+        isOpen={showDemoWalkthrough} 
+        onClose={() => setShowDemoWalkthrough(false)} 
       />
     </div>
   );
