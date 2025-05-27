@@ -369,7 +369,7 @@ export default function SecuritySettings() {
               <div className="flex items-center justify-between">
                 <h4 className="font-semibold">Active Sessions</h4>
                 <Button size="sm" variant="outline" onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/security/sessions'] })}>
-                  <Refresh className="w-3 h-3 mr-1" />
+                  <RotateCcw className="w-3 h-3 mr-1" />
                   Refresh
                 </Button>
               </div>
