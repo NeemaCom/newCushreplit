@@ -62,7 +62,7 @@ export default function PersonalizedDashboard() {
   });
 
   useEffect(() => {
-    if (insights) {
+    if (insights && Array.isArray(insights)) {
       setAiInsights(insights);
     }
   }, [insights]);
