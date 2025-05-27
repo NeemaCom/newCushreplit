@@ -1,0 +1,86 @@
+Understood. Here are prompts for an AI agent to handle various admin functions for the Cush platform, written from the perspective of a senior FAANG engineer prioritizing security, auditability, and scalability. Each prompt defines a specific admin task with clear requirements.
+
+---
+
+## AI Agent Prompt: Admin Function - User Management
+
+**Objective:** Implement and secure an admin interface and API endpoints for comprehensive user management.
+
+**Core Requirements:**
+1.  **User Search & View:** Provide functionality for admins to securely search for users by various criteria (e.g., email, name, user ID) and view their complete profiles (excluding sensitive payment details in plaintext).
+2.  **User Account Status:** Implement actions to securely:
+    * **Activate/Deactivate User Accounts:** Temporarily suspend or reactivate user access.
+    * **Lock/Unlock Accounts:** Respond to suspicious activity by locking accounts, and allow unlocking after resolution.
+    * **Delete Accounts:** Implement a soft-delete mechanism with an optional hard-delete for data retention compliance, ensuring all associated data (except audit trails) is appropriately purged or anonymized.
+3.  **Role Assignment:** Allow admins to securely assign and revoke user roles (e.g., change a customer to an admin, or vice-versa, with proper authorization checks).
+4.  **Password Reset (Admin-Initiated):** Implement a secure process for admins to initiate a password reset for a user, which should always trigger an email to the user, never expose the new password to the admin, and invalidate existing sessions.
+5.  **Audit Logging:** Every admin action performed on a user account must be immutably logged with timestamps, the admin's ID, and the specific action taken.
+
+**FAANG Focus:** Enforce strict access control (RBAC) for admin roles. Implement robust input validation for all admin actions. Ensure all data retrieval and modification endpoints are secured against unauthorized access and common vulnerabilities. Prioritize non-repudiation for all admin actions.
+
+---
+
+## AI Agent Prompt: Admin Function - Financial Transaction Monitoring
+
+**Objective:** Develop a secure admin interface and API endpoints for monitoring all financial transactions on the platform.
+
+**Core Requirements:**
+1.  **Transaction Search & Filtering:** Enable admins to search and filter remittance, loan, and wallet transactions by various criteria (e.g., date range, sender, receiver, amount, status, transaction ID, payment gateway).
+2.  **Transaction Details View:** Provide a detailed view for each transaction, including:
+    * Source and destination of funds.
+    * Associated fees and exchange rates.
+    * Payment gateway reference IDs (Stripe, Paystack).
+    * Transaction status and history (e.g., pending, completed, failed, refunded).
+    * Related user accounts.
+3.  **Transaction Status Update (Limited):** Allow admins to *limitedly* update the status of specific transactions (e.g., manual override for failed transactions after external verification), but with strict audit logging and multi-level approval if necessary for sensitive actions.
+4.  **Refund Initiation (Limited):** Implement functionality for authorized admins to securely initiate refunds through the integrated payment gateways, with clear audit trails and safeguards against accidental or fraudulent refunds.
+5.  **Reporting & Analytics:** Generate aggregate reports on transaction volume, revenue, success/failure rates, and geographical distribution.
+
+**FAANG Focus:** Prioritize read-only access for most transaction data. Implement stringent audit trails for any data modification or sensitive action. Ensure PCI DSS compliance for any data handled. Prevent any direct exposure of raw payment card information to admins. Implement robust performance for large datasets.
+
+---
+
+## AI Agent Prompt: Admin Function - Content & Service Management
+
+**Objective:** Enable admins to manage various platform content and service configurations.
+
+**Core Requirements:**
+1.  **CMS (Content Management System) Interface:** Provide an intuitive interface for admins to:
+    * Create, edit, and publish static content (e.g., FAQ articles, blog posts, service descriptions, legal terms).
+    * Manage content versions and drafts.
+    * Schedule content publication/unpublication.
+2.  **Service Configuration:** Allow admins to:
+    * Adjust parameters for existing services (e.g., mentorship program availability, advisory service pricing tiers, loan pre-qualification criteria thresholds).
+    * Manage currency exchange rates (if manually controlled or to review automated feeds).
+    * Configure specific partner integrations (e.g., enable/disable a loan provider, update API keys for partners).
+3.  **Concierge Assistant Assignment:** Implement a mechanism for admins to assign new "Concierge Service" subscribers to available migration assistants, and track assistant workload.
+4.  **Imisi 2.0 (Chatbot) Management:** Provide controls for admins to:
+    * Update knowledge base articles and common responses for the Imisi 2.0 chatbot.
+    * Review chatbot conversation logs for performance and improvement.
+    * Potentially retrain the chatbot's knowledge base.
+
+**FAANG Focus:** Implement version control for content and configuration changes. Ensure role-based access to specific content types and service parameters. All changes must be auditable, showing who changed what and when. Implement clear validation for configuration changes to prevent system instability.
+
+---
+
+## AI Agent Prompt: Admin Function - System Health & Monitoring
+
+**Objective:** Provide admins with comprehensive tools and dashboards to monitor the overall health, performance, and security of the Cush platform.
+
+**Core Requirements:**
+1.  **System Status Dashboard:** Develop a real-time dashboard displaying key system metrics:
+    * API response times.
+    * Server load and resource utilization (CPU, memory).
+    * Database connection status and query performance.
+    * Uptime for critical services (e.g., authentication, payment gateways, chatbot).
+    * Queue sizes for asynchronous tasks (e.g., email sending, background processing).
+2.  **Error & Log Monitoring:** Centralized access to application logs (error logs, access logs, security logs). Enable filtering and searching capabilities.
+3.  **Security Alerts:** Display and manage alerts triggered by security events (e.g., suspicious login attempts, unauthorized access attempts, WAF blocks).
+4.  **User Activity Monitoring (Aggregated):** Provide aggregated statistics on user activity (e.g., number of active users, new registrations, feature usage trends), ensuring no exposure of individual user's sensitive Browse history.
+5.  **Alert Configuration:** Allow authorized admins to configure alerting thresholds and notification channels (e.g., email, Slack, PagerDuty) for critical system events.
+
+**FAANG Focus:** Implement robust observability using industry-standard tools (e.g., Prometheus, Grafana, ELK stack/Splunk). Prioritize real-time data and actionable insights. Ensure logs are secure, immutable, and retained according to compliance policies. Implement proactive alerting for potential issues to enable rapid incident response.
+
+---
+
+These prompts provide a solid foundation for defining admin functionalities. Do you want to dive deeper into any specific admin function, or perhaps discuss how these might interact with a central admin panel?

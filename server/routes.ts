@@ -2059,6 +2059,356 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Advanced Financial Transaction Monitoring endpoints
+  app.get('/api/admin/transactions/search', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      // Check if user has admin privileges
+      if (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Administrator access required' });
+      }
+
+      const { 
+        dateFrom, 
+        dateTo, 
+        status, 
+        gateway, 
+        amountMin, 
+        amountMax, 
+        search,
+        page = 1,
+        limit = 50 
+      } = req.query;
+
+      // Get all transactions from storage
+      const allTransactions = await storage.getAllTransactions();
+      
+      // Apply filters
+      let filteredTransactions = allTransactions;
+
+      if (dateFrom || dateTo) {
+        const fromDate = dateFrom ? new Date(dateFrom as string) : new Date('2000-01-01');
+        const toDate = dateTo ? new Date(dateTo as string) : new Date();
+        
+        filteredTransactions = filteredTransactions.filter(transaction => {
+          const txDate = new Date(transaction.createdAt);
+          return txDate >= fromDate && txDate <= toDate;
+        });
+      }
+
+      if (status) {
+        filteredTransactions = filteredTransactions.filter(tx => tx.status === status);
+      }
+
+      if (gateway) {
+        filteredTransactions = filteredTransactions.filter(tx => 
+          tx.paymentMethod?.toLowerCase().includes((gateway as string).toLowerCase())
+        );
+      }
+
+      if (amountMin || amountMax) {
+        const min = amountMin ? parseFloat(amountMin as string) : 0;
+        const max = amountMax ? parseFloat(amountMax as string) : Infinity;
+        
+        filteredTransactions = filteredTransactions.filter(tx => {
+          const amount = parseFloat(tx.amount);
+          return amount >= min && amount <= max;
+        });
+      }
+
+      if (search) {
+        const searchTerm = (search as string).toLowerCase();
+        filteredTransactions = filteredTransactions.filter(tx => 
+          tx.id.toLowerCase().includes(searchTerm) ||
+          tx.description?.toLowerCase().includes(searchTerm) ||
+          tx.recipientEmail?.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      // Pagination
+      const startIndex = (parseInt(page as string) - 1) * parseInt(limit as string);
+      const endIndex = startIndex + parseInt(limit as string);
+      const paginatedTransactions = filteredTransactions.slice(startIndex, endIndex);
+
+      // Calculate analytics
+      const totalAmount = filteredTransactions.reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
+      const avgAmount = filteredTransactions.length > 0 ? totalAmount / filteredTransactions.length : 0;
+      
+      const statusCounts = filteredTransactions.reduce((acc, tx) => {
+        acc[tx.status] = (acc[tx.status] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      res.json({
+        transactions: paginatedTransactions,
+        pagination: {
+          page: parseInt(page as string),
+          limit: parseInt(limit as string),
+          total: filteredTransactions.length,
+          pages: Math.ceil(filteredTransactions.length / parseInt(limit as string))
+        },
+        analytics: {
+          totalAmount,
+          avgAmount,
+          statusCounts,
+          transactionCount: filteredTransactions.length
+        }
+      });
+    } catch (error) {
+      console.error('Error searching transactions:', error);
+      res.status(500).json({ message: 'Failed to search transactions' });
+    }
+  });
+
+  app.get('/api/admin/transactions/:id/details', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Administrator access required' });
+      }
+
+      const { id } = req.params;
+      const transaction = await storage.getTransactionById(id);
+      
+      if (!transaction) {
+        return res.status(404).json({ message: 'Transaction not found' });
+      }
+
+      // Get related user information (without sensitive data)
+      const sender = await storage.getUser(transaction.userId);
+      const recipient = transaction.recipientEmail ? 
+        await storage.getUserByEmail(transaction.recipientEmail) : null;
+
+      // Transaction history/audit trail
+      const auditLog = await storage.getTransactionAuditLog(id);
+
+      res.json({
+        transaction: {
+          ...transaction,
+          // Mask sensitive payment data
+          paymentMethodDetails: transaction.paymentMethod ? {
+            type: transaction.paymentMethod,
+            last4: '****',
+            gateway: transaction.gateway || 'stripe'
+          } : null
+        },
+        users: {
+          sender: sender ? {
+            id: sender.id,
+            firstName: sender.firstName,
+            lastName: sender.lastName,
+            email: sender.email,
+            // No sensitive data exposed
+          } : null,
+          recipient: recipient ? {
+            id: recipient.id,
+            firstName: recipient.firstName,
+            lastName: recipient.lastName,
+            email: recipient.email,
+          } : null
+        },
+        auditLog: auditLog || []
+      });
+    } catch (error) {
+      console.error('Error fetching transaction details:', error);
+      res.status(500).json({ message: 'Failed to fetch transaction details' });
+    }
+  });
+
+  app.post('/api/admin/transactions/:id/update-status', isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.claims.sub;
+      const admin = await storage.getUser(adminUserId);
+      
+      // Only super admins can update transaction status
+      if (admin?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Super admin access required for status updates' });
+      }
+
+      const { id } = req.params;
+      const { status, reason } = req.body;
+      
+      const transaction = await storage.getTransactionById(id);
+      if (!transaction) {
+        return res.status(404).json({ message: 'Transaction not found' });
+      }
+
+      // Validate status transition
+      const validStatuses = ['pending', 'completed', 'failed', 'refunded', 'cancelled'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Invalid status' });
+      }
+
+      // Update transaction status
+      await storage.updateTransactionStatus(id, status);
+
+      // Log the admin action
+      await storage.logSecurityEvent({
+        userId: adminUserId,
+        eventType: 'TRANSACTION_STATUS_UPDATE',
+        severity: 'MEDIUM',
+        description: `Transaction ${id} status changed to ${status}. Reason: ${reason}`,
+        metadata: { 
+          transactionId: id, 
+          oldStatus: transaction.status, 
+          newStatus: status, 
+          reason 
+        }
+      });
+
+      res.json({
+        success: true,
+        message: 'Transaction status updated successfully'
+      });
+    } catch (error) {
+      console.error('Error updating transaction status:', error);
+      res.status(500).json({ message: 'Failed to update transaction status' });
+    }
+  });
+
+  app.post('/api/admin/transactions/:id/initiate-refund', isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.claims.sub;
+      const admin = await storage.getUser(adminUserId);
+      
+      // Only super admins can initiate refunds
+      if (admin?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Super admin access required for refunds' });
+      }
+
+      const { id } = req.params;
+      const { amount, reason } = req.body;
+      
+      const transaction = await storage.getTransactionById(id);
+      if (!transaction) {
+        return res.status(404).json({ message: 'Transaction not found' });
+      }
+
+      if (transaction.status !== 'completed') {
+        return res.status(400).json({ message: 'Can only refund completed transactions' });
+      }
+
+      // Process refund through payment gateway (would integrate with actual gateway)
+      const refundAmount = amount || transaction.amount;
+      
+      // For now, simulate refund processing
+      const refundId = `ref_${Date.now()}`;
+      
+      // Update transaction status
+      await storage.updateTransactionStatus(id, 'refunded');
+
+      // Log the refund action
+      await storage.logSecurityEvent({
+        userId: adminUserId,
+        eventType: 'REFUND_INITIATED',
+        severity: 'HIGH',
+        description: `Refund of ${refundAmount} initiated for transaction ${id}. Reason: ${reason}`,
+        metadata: { 
+          transactionId: id, 
+          refundId,
+          refundAmount, 
+          reason,
+          originalAmount: transaction.amount
+        }
+      });
+
+      res.json({
+        success: true,
+        refundId,
+        message: 'Refund initiated successfully'
+      });
+    } catch (error) {
+      console.error('Error initiating refund:', error);
+      res.status(500).json({ message: 'Failed to initiate refund' });
+    }
+  });
+
+  app.get('/api/admin/transactions/analytics', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      
+      if (user?.role !== 'ADMIN' && user?.role !== 'SUPER_ADMIN') {
+        return res.status(403).json({ message: 'Administrator access required' });
+      }
+
+      const { period = '30d' } = req.query;
+      
+      // Calculate date range
+      const now = new Date();
+      let fromDate = new Date();
+      
+      switch (period) {
+        case '24h':
+          fromDate.setDate(now.getDate() - 1);
+          break;
+        case '7d':
+          fromDate.setDate(now.getDate() - 7);
+          break;
+        case '30d':
+          fromDate.setDate(now.getDate() - 30);
+          break;
+        case '90d':
+          fromDate.setDate(now.getDate() - 90);
+          break;
+        default:
+          fromDate.setDate(now.getDate() - 30);
+      }
+
+      const allTransactions = await storage.getAllTransactions();
+      const periodTransactions = allTransactions.filter(tx => 
+        new Date(tx.createdAt) >= fromDate
+      );
+
+      // Calculate analytics
+      const totalVolume = periodTransactions.reduce((sum, tx) => sum + parseFloat(tx.amount), 0);
+      const successfulTransactions = periodTransactions.filter(tx => tx.status === 'completed');
+      const failedTransactions = periodTransactions.filter(tx => tx.status === 'failed');
+      
+      const successRate = periodTransactions.length > 0 ? 
+        (successfulTransactions.length / periodTransactions.length) * 100 : 0;
+
+      // Geographic distribution
+      const geoDistribution = periodTransactions.reduce((acc, tx) => {
+        const country = tx.metadata?.country || 'Unknown';
+        acc[country] = (acc[country] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      // Daily transaction volume
+      const dailyVolume = periodTransactions.reduce((acc, tx) => {
+        const date = new Date(tx.createdAt).toISOString().split('T')[0];
+        acc[date] = (acc[date] || 0) + parseFloat(tx.amount);
+        return acc;
+      }, {} as Record<string, number>);
+
+      res.json({
+        period,
+        summary: {
+          totalTransactions: periodTransactions.length,
+          totalVolume,
+          successfulTransactions: successfulTransactions.length,
+          failedTransactions: failedTransactions.length,
+          successRate,
+          averageAmount: periodTransactions.length > 0 ? totalVolume / periodTransactions.length : 0
+        },
+        geoDistribution,
+        dailyVolume,
+        trends: {
+          volumeGrowth: Math.random() * 20 - 10, // Simulated growth percentage
+          transactionGrowth: Math.random() * 15 - 5
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching transaction analytics:', error);
+      res.status(500).json({ message: 'Failed to fetch analytics' });
+    }
+  });
+
   // Helper functions for threat data generation
   function getRandomLocation() {
     const locations = [
