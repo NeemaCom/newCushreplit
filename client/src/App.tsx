@@ -24,6 +24,7 @@ import ComplianceDashboard from "@/pages/compliance-dashboard";
 import SecurityDashboard from "@/pages/security-dashboard";
 import SecuritySettings from "@/pages/security-settings";
 import HomeBase from "@/pages/homebase";
+import PersonalizedDashboard from "@/pages/personalized-dashboard";
 import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import OnboardingTutorial from "@/components/onboarding-tutorial";
 
@@ -57,6 +58,7 @@ function Router() {
       ) : (
         <>
           <Route path="/" component={Dashboard} />
+          <Route path="/personalized" component={PersonalizedDashboard} />
           <Route path="/community" component={Community} />
           <Route path="/documentation" component={Documentation} />
           <Route path="/flights" component={Flights} />

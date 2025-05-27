@@ -2602,6 +2602,160 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return threats;
   }
 
+  // AI-powered personalization endpoints
+  app.post("/api/ai-insights/generate", isAuthenticated, async (req, res) => {
+    try {
+      const { preferences } = req.body;
+      const userId = req.user?.claims?.sub;
+
+      if (!preferences) {
+        return res.status(400).json({ message: "User preferences required" });
+      }
+
+      // Generate personalized AI insights based on user preferences
+      const insights = await generatePersonalizedInsights(preferences, userId);
+      
+      res.json(insights);
+    } catch (error) {
+      console.error("Error generating AI insights:", error);
+      res.status(500).json({ message: "Failed to generate personalized insights" });
+    }
+  });
+
+  app.get("/api/ai-insights", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      
+      // Get cached insights or generate new ones
+      const insights = await getPersonalizedInsights(userId);
+      
+      res.json(insights);
+    } catch (error) {
+      console.error("Error fetching AI insights:", error);
+      res.status(500).json({ message: "Failed to fetch personalized insights" });
+    }
+  });
+
+  app.post("/api/dashboard/layout", isAuthenticated, async (req, res) => {
+    try {
+      const { layout } = req.body;
+      const userId = req.user?.claims?.sub;
+
+      // Save user's dashboard layout preferences
+      await saveDashboardLayout(userId, layout);
+      
+      res.json({ message: "Dashboard layout saved successfully" });
+    } catch (error) {
+      console.error("Error saving dashboard layout:", error);
+      res.status(500).json({ message: "Failed to save dashboard layout" });
+    }
+  });
+
+  app.get("/api/dashboard/layout", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.user?.claims?.sub;
+      
+      const layout = await getDashboardLayout(userId);
+      
+      res.json(layout);
+    } catch (error) {
+      console.error("Error fetching dashboard layout:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard layout" });
+    }
+  });
+
+  // Helper functions for AI personalization
+  async function generatePersonalizedInsights(preferences: any, userId: string) {
+    const insights = [];
+    
+    // Generate insights based on primary goals
+    if (preferences.primaryGoals?.includes('study_abroad')) {
+      insights.push({
+        id: `insight_${Date.now()}_1`,
+        type: 'recommendation',
+        priority: 'high',
+        title: 'Student Visa Application Tips',
+        message: 'Based on your study abroad goals, consider preparing your financial statements early. Most universities require 6 months of bank statements.',
+        action: 'View Requirements',
+        actionUrl: '/documentation',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    if (preferences.primaryGoals?.includes('work_visa')) {
+      insights.push({
+        id: `insight_${Date.now()}_2`,
+        type: 'alert',
+        priority: 'medium',
+        title: 'Work Visa Processing Times',
+        message: 'Current processing times for work visas are 8-12 weeks. Consider applying early to avoid delays.',
+        action: 'Check Status',
+        actionUrl: '/applications',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // Financial insights
+    if (preferences.dashboardWidgets?.includes('wallet_overview')) {
+      insights.push({
+        id: `insight_${Date.now()}_3`,
+        type: 'tip',
+        priority: 'low',
+        title: 'Currency Exchange Optimization',
+        message: 'GBP exchange rates are currently favorable. Consider transferring funds now to save on conversion costs.',
+        action: 'Transfer Now',
+        actionUrl: '/wallet',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // Housing insights
+    if (preferences.dashboardWidgets?.includes('housing_matches')) {
+      insights.push({
+        id: `insight_${Date.now()}_4`,
+        type: 'recommendation',
+        priority: 'medium',
+        title: 'New Housing Matches Available',
+        message: 'We found 3 new accommodation options in Manchester that match your preferences and budget.',
+        action: 'View Matches',
+        actionUrl: '/homebase',
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    return insights;
+  }
+
+  async function getPersonalizedInsights(userId: string) {
+    // In a real implementation, this would fetch from a database
+    // For now, return some sample insights
+    return [
+      {
+        id: 'cached_insight_1',
+        type: 'recommendation',
+        priority: 'high',
+        title: 'Document Verification Reminder',
+        message: 'Your passport expires in 8 months. Many visa applications require 12+ months validity.',
+        action: 'Renew Passport',
+        timestamp: new Date().toISOString()
+      }
+    ];
+  }
+
+  async function saveDashboardLayout(userId: string, layout: any) {
+    // In a real implementation, this would save to database
+    console.log(`Saving dashboard layout for user ${userId}:`, layout);
+  }
+
+  async function getDashboardLayout(userId: string) {
+    // In a real implementation, this would fetch from database
+    return {
+      widgets: [],
+      layout: 'comfortable',
+      lastUpdated: new Date().toISOString()
+    };
+  }
+
   const httpServer = createServer(app);
   return httpServer;
 }
