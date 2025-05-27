@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { registerHousingRoutes } from "./housing-routes";
 import { 
   authRateLimit, 
   paymentRateLimit, 
@@ -25,6 +26,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+
+  // Housing matchmaking routes
+  registerHousingRoutes(app);
 
   // Auth routes with enhanced security
   app.get('/api/auth/user', authRateLimit, enhancedAuth, isAuthenticated, async (req: any, res) => {
