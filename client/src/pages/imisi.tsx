@@ -23,7 +23,10 @@ import {
   Users,
   Calendar,
   Clock,
-  Zap
+  Zap,
+  Crown,
+  ArrowRight,
+  Star
 } from "lucide-react";
 import Header from "@/components/header";
 
@@ -32,7 +35,7 @@ interface ChatMessage {
   content: string;
   isUser: boolean;
   timestamp: Date;
-  type?: 'text' | 'suggestion';
+  type?: 'text' | 'suggestion' | 'concierge-offer';
 }
 
 const quickActions = [
@@ -66,15 +69,36 @@ export default function Imisi() {
   const { user } = useAuth();
   const [message, setMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [showConciergeOffer, setShowConciergeOffer] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
-      content: `Hello ${user?.firstName || 'there'}! I'm Imisi, your AI assistant for all things related to international finance and immigration. I'm here to help you with transfers, visa applications, loan information, and more. How can I assist you today?`,
+      content: `Hello there! I'm Imisi, your AI assistant for all things related to international finance and immigration. I'm here to help you with transfers, visa applications, loan information, and more. How can I assist you today?`,
       isUser: false,
       timestamp: new Date(),
       type: 'text'
     }
   ]);
+
+  // Check if user has Concierge subscription
+  const { data: subscription } = useQuery({
+    queryKey: ['/api/concierge/subscription'],
+    retry: false,
+  });
+
+  // Detect if user needs premium assistance
+  const detectPremiumNeed = (userMessage: string) => {
+    const premiumKeywords = [
+      'complicated', 'complex', 'urgent', 'help me with', 'struggling', 
+      'deadline', 'rejected', 'denied', 'appeal', 'priority', 'emergency',
+      'document review', 'application help', 'visa interview', 'follow up',
+      'not sure what to do', 'confused', 'overwhelmed'
+    ];
+    
+    return premiumKeywords.some(keyword => 
+      userMessage.toLowerCase().includes(keyword)
+    );
+  };
 
   const sendMessageMutation = useMutation({
     mutationFn: async (userMessage: string) => {
@@ -92,6 +116,22 @@ export default function Imisi() {
         timestamp: new Date(),
         type: 'text'
       }]);
+      
+      // Check if user needs premium assistance and doesn't have subscription
+      const lastUserMessage = messages[messages.length - 1]?.content || "";
+      if (!subscription && detectPremiumNeed(lastUserMessage) && !showConciergeOffer) {
+        setTimeout(() => {
+          setMessages(prev => [...prev, {
+            id: `concierge-offer-${Date.now()}`,
+            content: "I notice you're dealing with a complex immigration matter. Our Concierge Service provides dedicated human migration assistants who can give you personalized guidance, document review, and priority support. Would you like to learn more about upgrading to premium assistance?",
+            isUser: false,
+            timestamp: new Date(),
+            type: 'concierge-offer'
+          }]);
+          setShowConciergeOffer(true);
+        }, 1500);
+      }
+      
       setIsTyping(false);
     },
     onError: () => {
@@ -280,15 +320,44 @@ export default function Imisi() {
                     </Avatar>
                     
                     <div className={`flex-1 ${msg.isUser ? 'text-right' : ''}`}>
-                      <div
-                        className={`inline-block p-3 rounded-2xl max-w-xs lg:max-w-md ${
-                          msg.isUser
-                            ? 'bg-cush-primary text-white'
-                            : 'bg-cush-gray-100 text-cush-gray-900'
-                        }`}
-                      >
-                        <p className="text-sm leading-relaxed">{msg.content}</p>
-                      </div>
+                      {msg.type === 'concierge-offer' ? (
+                        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-2xl p-4 max-w-md">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Crown className="w-5 h-5 text-purple-600" />
+                            <span className="font-semibold text-purple-800">Premium Assistance Available</span>
+                          </div>
+                          <p className="text-sm text-gray-700 mb-3">{msg.content}</p>
+                          <div className="flex space-x-2">
+                            <Button 
+                              size="sm" 
+                              className="bg-purple-600 hover:bg-purple-700 text-white flex items-center space-x-1"
+                              onClick={() => window.location.href = '/concierge'}
+                            >
+                              <Star className="w-4 h-4" />
+                              <span>Learn More</span>
+                              <ArrowRight className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="text-gray-600 border-gray-300"
+                              onClick={() => setShowConciergeOffer(false)}
+                            >
+                              Maybe Later
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className={`inline-block p-3 rounded-2xl max-w-xs lg:max-w-md ${
+                            msg.isUser
+                              ? 'bg-cush-primary text-white'
+                              : 'bg-cush-gray-100 text-cush-gray-900'
+                          }`}
+                        >
+                          <p className="text-sm leading-relaxed">{msg.content}</p>
+                        </div>
+                      )}
                       <p className="text-xs text-cush-gray-500 mt-1">
                         {formatTime(msg.timestamp)}
                       </p>
