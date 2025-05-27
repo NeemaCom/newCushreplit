@@ -18,6 +18,7 @@ import AdminDashboard from "@/pages/admin-dashboard";
 import Imisi from "@/pages/imisi";
 import Wallet from "@/pages/wallet";
 import FinancialServices from "@/pages/financial-services";
+import Concierge from "@/pages/concierge";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -39,6 +40,7 @@ function Router() {
           <Route path="/imisi" component={Imisi} />
           <Route path="/wallet" component={Wallet} />
           <Route path="/financial-services" component={FinancialServices} />
+          <Route path="/concierge" component={Concierge} />
           <Route path="/admin" component={AdminDashboard} />
         </>
       )}
