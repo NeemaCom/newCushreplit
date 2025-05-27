@@ -25,6 +25,7 @@ import SecurityDashboard from "@/pages/security-dashboard";
 import SecuritySettings from "@/pages/security-settings";
 import HomeBase from "@/pages/homebase";
 import PWAInstallPrompt from "@/components/pwa-install-prompt";
+import OnboardingTutorial from "@/components/onboarding-tutorial";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -87,6 +88,7 @@ function App() {
         <Toaster />
         <Router />
         <PWAInstallPrompt />
+        <OnboardingTutorial />
       </TooltipProvider>
     </QueryClientProvider>
   );
