@@ -169,6 +169,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Password recovery endpoint
+  app.post('/api/auth/recover-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+      
+      // Check if user exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (!existingUser) {
+        return res.json({ message: 'If an account with that email exists, a password reset link has been sent.' });
+      }
+      
+      // Generate temporary password
+      const tempPassword = Math.random().toString(36).slice(-8) + 'A1!';
+      const hashedTempPassword = await bcrypt.hash(tempPassword, 10);
+      
+      // Update user with temporary password
+      await storage.updateUserPassword(existingUser.id, hashedTempPassword);
+      
+      res.json({ 
+        message: 'Temporary password generated successfully',
+        tempPassword: tempPassword,
+        note: 'Use this temporary password to log in, then change it immediately'
+      });
+    } catch (error) {
+      console.error('Password recovery error:', error);
+      res.status(500).json({ error: 'Failed to process password recovery' });
+    }
+  });
+
   app.post('/api/auth/signin', authRateLimit, async (req, res) => {
     try {
       const { email, password } = req.body;
