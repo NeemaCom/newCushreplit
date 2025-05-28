@@ -38,26 +38,26 @@ export default function Dashboard() {
   const userName = user?.firstName || "User";
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-gradient-subtle safe-area-inset-top">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section with modern styling */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-cush-gray-900 mb-2">
+      <main className="responsive-container space-responsive-sm">
+        {/* Mobile-First Welcome Section */}
+        <div className="space-responsive-md">
+          <div className="flex-mobile-stack gap-4">
+            <div className="space-y-2">
+              <h1 className="text-fluid-2xl font-bold text-cush-gray-900">
                 Welcome back, {userName}!
               </h1>
-              <p className="text-cush-gray-600 text-lg">
+              <p className="text-fluid-base text-cush-gray-600">
                 Manage your immigration journey and financial services in one secure platform.
               </p>
             </div>
-            <div className="hidden md:flex items-center space-x-4">
-              <div className="bg-white rounded-2xl px-6 py-3 shadow-modern">
-                <div className="flex items-center space-x-2">
+            <div className="hidden md:flex items-center">
+              <div className="card-responsive touch-target">
+                <div className="flex items-center gap-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-sm font-medium text-cush-gray-700">System Operational</span>
+                  <span className="text-fluid-sm font-medium text-cush-gray-700">System Operational</span>
                 </div>
               </div>
             </div>
