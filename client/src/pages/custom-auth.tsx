@@ -231,10 +231,10 @@ export default function CustomAuth() {
             </Tabs>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg border-0 p-8">
+          <div className="bg-white rounded-xl shadow-lg border-0 p-4 sm:p-6 lg:p-8">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               {/* Sign In Tab */}
-              <TabsContent value="signin" className="space-y-6">
+              <TabsContent value="signin" className="space-y-4">
                 <div className="text-center mb-8">
                   <h2 className="text-2xl font-semibold text-gray-900 mb-2">Welcome Back</h2>
                 </div>
@@ -315,10 +315,10 @@ export default function CustomAuth() {
               </TabsContent>
 
               {/* Sign Up Tab */}
-              <TabsContent value="signup" className="space-y-4">
+              <TabsContent value="signup" className="space-y-3">
                 <Form {...signUpForm}>
-                  <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                  <form onSubmit={signUpForm.handleSubmit(onSignUp)} className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <FormField
                         control={signUpForm.control}
                         name="firstName"
@@ -331,7 +331,7 @@ export default function CustomAuth() {
                                 <Input
                                   {...field}
                                   placeholder="First name"
-                                  className="pl-10"
+                                  className="pl-10 h-10"
                                 />
                               </div>
                             </FormControl>
@@ -352,7 +352,7 @@ export default function CustomAuth() {
                                 <Input
                                   {...field}
                                   placeholder="Last name"
-                                  className="pl-10"
+                                  className="pl-10 h-10"
                                 />
                               </div>
                             </FormControl>
