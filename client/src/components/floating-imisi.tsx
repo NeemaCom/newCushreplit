@@ -172,8 +172,8 @@ export default function FloatingImisi() {
       {isOpen && (
         <div className={`fixed z-50 bg-white shadow-2xl border transition-all duration-300 ${
           isMinimized 
-            ? 'bottom-6 right-6 w-80 h-16 rounded-2xl' 
-            : 'md:bottom-6 md:right-6 md:w-96 md:h-[600px] md:rounded-2xl md:max-w-[calc(100vw-2rem)] md:max-h-[calc(100vh-3rem)] max-md:top-0 max-md:left-0 max-md:right-0 max-md:bottom-0 max-md:w-full max-md:h-full max-md:rounded-none max-md:max-w-none max-md:max-h-none'
+            ? 'bottom-4 right-4 w-80 h-16 rounded-2xl' 
+            : 'bottom-4 right-4 w-96 h-[600px] rounded-2xl max-w-[calc(100vw-1rem)] max-h-[calc(100vh-2rem)] sm:w-96 sm:h-[600px] max-sm:w-[calc(100vw-1rem)] max-sm:h-[calc(100vh-2rem)] max-sm:bottom-2 max-sm:right-2'
         }`}>
           
           {/* Header */}
@@ -188,10 +188,10 @@ export default function FloatingImisi() {
                 </Avatar>
                 <div>
                   <h3 className="font-semibold text-gray-900 text-lg">Imisi AI</h3>
-                  <p className="text-sm text-green-600 flex items-center">
+                  <div className="text-sm text-green-600 flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                     Online
-                  </p>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
@@ -218,7 +218,7 @@ export default function FloatingImisi() {
           {/* Messages and Input - Only show when not minimized */}
           {!isMinimized && (
             <>
-              <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 md:h-[400px] max-md:h-[calc(100vh-180px)] scrollbar-thin scrollbar-thumb-gray-300">
+              <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 h-[calc(100%-140px)] scrollbar-thin scrollbar-thumb-gray-300">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
