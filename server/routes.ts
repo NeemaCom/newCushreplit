@@ -26,6 +26,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
+  
+  // Google OAuth setup
+  setupGoogleAuth(app);
 
   // Housing matchmaking routes
   registerHousingRoutes(app);

@@ -74,6 +74,7 @@ export interface IStorage {
   // Custom authentication operations
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(userData: any): Promise<User>;
+  updateUser(id: string, userData: any): Promise<User>;
   deleteUserByEmail?(email: string): Promise<void>;
   
   // Wallet operations
@@ -219,6 +220,18 @@ export class DatabaseStorage implements IStorage {
         createdAt: new Date(),
         updatedAt: new Date(),
       })
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: string, userData: any): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        ...userData,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
       .returning();
     return user;
   }
