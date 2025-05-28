@@ -813,8 +813,32 @@ export default function Landing() {
             </div>
           </div>
           
-          <div className="border-t border-gray-800 pt-8 pb-4 text-center text-gray-400">
-            <p>&copy; 2024 Cush Global Immigration. All rights reserved.</p>
+          <div className="border-t border-gray-800 pt-8 pb-4 text-gray-400">
+            <div className="space-y-4 text-sm leading-relaxed">
+              <p>
+                Cush is a migration-focused financial technology platform helping individuals navigate cross-border relocation with access to financial services, documentation support, and advisory tools. We operate in partnership with licensed financial institutions, money transmitters, and technology providers in their respective jurisdictions. All trademarks, logos, and brand names are the property of their respective owners and are used strictly for identification purposes. Use of such names, trademarks, and brands does not imply endorsement.
+              </p>
+              
+              <p>
+                Virtual wallet and card services are provided through our partnerships with licensed financial institutions and fintech partners, operating under applicable Visa and Mastercard licensing agreements. All associated brand elements are the intellectual property of their respective trademark holders.
+              </p>
+              
+              <p>
+                Loan referral services are offered in compliance with relevant financial regulations through approved lending partners and licensed institutions. Cush does not directly issue loans but facilitates secure and responsible access to credit through qualified third-party providers.
+              </p>
+              
+              <p className="font-semibold">
+                <strong>Disclaimer:</strong> Cush, including any subsidiaries or affiliates, does not offer legal, immigration, tax, or financial advisory services. Our tools and concierge support are informational in nature and do not replace professional advice. For legal, tax, or financial matters, we strongly recommend consulting with a licensed professional. Please review our Privacy Policy, Terms of Use, and Service Agreements before using our platform.
+              </p>
+              
+              <p>
+                Certain Cush features may be restricted or unavailable in some regions due to local licensing and regulatory requirements.
+              </p>
+              
+              <p className="text-center pt-4 border-t border-gray-800 font-medium">
+                © 2024 Cush. All rights reserved
+              </p>
+            </div>
           </div>
         </div>
       </footer>

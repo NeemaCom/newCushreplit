@@ -57,7 +57,7 @@ function Router() {
               </div>
             </div>
           </Route>
-          <Route path="*" component={Landing} />
+
         </>
       ) : (
         <>
@@ -81,7 +81,6 @@ function Router() {
           <Route path="/security" component={SecurityDashboard} />
           <Route path="/security-settings" component={SecuritySettings} />
           <Route path="/admin" component={AdminDashboard} />
-          <Route path="*" component={Dashboard} />
         </>
       )}
     </Switch>
