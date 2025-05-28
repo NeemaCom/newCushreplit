@@ -292,9 +292,9 @@ export default function FloatingImisi() {
                           </div>
                         </div>
                       )}
-                      <p className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-gray-500 mt-1">
                         {formatTime(msg.timestamp)}
-                      </p>
+                      </div>
                     </div>
                   </div>
                 ))}
