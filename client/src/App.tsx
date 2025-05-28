@@ -25,6 +25,7 @@ import SecurityDashboard from "@/pages/security-dashboard";
 import SecuritySettings from "@/pages/security-settings";
 import HomeBase from "@/pages/homebase";
 import PersonalizedDashboard from "@/pages/personalized-dashboard";
+import CustomAuth from "@/pages/custom-auth";
 import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import OnboardingTutorial from "@/components/onboarding-tutorial";
 import FloatingImisi from "@/components/floating-imisi";
@@ -43,6 +44,7 @@ function Router() {
       ) : !isAuthenticated ? (
         <>
           <Route path="/" component={Landing} />
+          <Route path="/auth" component={CustomAuth} />
           <Route path="/admin">
             <div className="min-h-screen flex items-center justify-center bg-gradient-subtle">
               <div className="text-center p-8">
