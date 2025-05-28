@@ -41,10 +41,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Custom Authentication Routes for the new auth design
   app.post('/api/auth/signup', authRateLimit, async (req, res) => {
     try {
-      const { firstName, lastName, email, password, phoneNumber, country, acceptTerms, acceptPrivacy } = req.body;
+      const { firstName, lastName, email, password, phone, phoneNumber, country, acceptTerms, acceptPrivacy } = req.body;
+      const userPhone = phone || phoneNumber; // Handle both field names
 
       // Validate required fields
-      if (!firstName || !lastName || !email || !password || !phoneNumber || !country) {
+      if (!firstName || !lastName || !email || !password || !userPhone || !country) {
         return res.status(400).json({
           success: false,
           errors: ['All fields are required']
@@ -70,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Validate phone number format
       const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
-      if (!phoneRegex.test(phoneNumber)) {
+      if (!phoneRegex.test(userPhone)) {
         return res.status(400).json({
           success: false,
           errors: ['Invalid phone number format']
@@ -95,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         firstName: sanitizeInput(firstName),
         lastName: sanitizeInput(lastName),
         password: hashedPassword,
-        phoneNumber: sanitizeInput(phoneNumber),
+        phoneNumber: sanitizeInput(userPhone),
         nationality: sanitizeInput(country),
         isEmailVerified: false,
         isPhoneVerified: false,

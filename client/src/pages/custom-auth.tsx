@@ -15,6 +15,8 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import cushLogo from '@assets/Logo + Typeface_PNG (4).png';
 import professionalImage from '@assets/vecteezy_young-afro-man_14070616-removebg-preview.png';
+import LoadingSpinner from '@/components/loading-spinner';
+import ConfettiAnimation from '@/components/confetti-animation';
 
 const signUpSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
