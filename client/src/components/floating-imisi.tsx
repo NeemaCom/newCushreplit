@@ -173,7 +173,7 @@ export default function FloatingImisi() {
         <div className={`fixed z-50 bg-white shadow-2xl border transition-all duration-300 gpu-accelerated ${
           isMinimized 
             ? 'bottom-4 right-4 w-80 h-16 rounded-2xl' 
-            : 'bottom-4 right-4 w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl max-w-[400px] max-h-[600px] sm:w-96 sm:h-[600px]'
+            : 'bottom-4 right-4 w-80 h-96 rounded-2xl max-h-[400px]'
         }`}>
           
           {/* Header */}
