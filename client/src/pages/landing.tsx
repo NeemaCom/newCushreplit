@@ -221,9 +221,7 @@ export default function Landing() {
                 alt="Cush Logo" 
                 className="h-8 w-auto object-contain sm:h-10 lg:h-12"
               />
-              <div className="hidden sm:block">
-                <p className="text-fluid-xs text-gray-600 font-medium">Financial solutions for expatriates</p>
-              </div>
+
             </div>
             
             <nav className="hidden lg:flex items-center space-x-6">
@@ -772,10 +770,7 @@ export default function Landing() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-lg">C</span>
-                </div>
-                <span className="font-bold text-2xl">Cush</span>
+                <img src={cushLogo} alt="Cush" className="h-8 w-auto object-contain filter brightness-0 invert" />
               </div>
               <p className="text-gray-400">
                 Making global immigration simple, secure, and successful for everyone.
@@ -836,7 +831,7 @@ export default function Landing() {
               </p>
               
               <p className="text-center pt-4 border-t border-gray-800 font-medium">
-                © 2024 Cush. All rights reserved
+                © 2025 Cush. All rights reserved
               </p>
             </div>
           </div>
