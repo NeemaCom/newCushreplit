@@ -183,7 +183,7 @@ export default function CustomAuth() {
             {/* Social Authentication Options */}
             <div className="grid grid-cols-2 gap-3">
               <button 
-                onClick={() => window.location.href = '/api/auth/google'}
+                onClick={() => window.location.href = '/api/login'}
                 className="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
