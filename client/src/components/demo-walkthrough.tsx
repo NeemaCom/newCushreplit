@@ -174,89 +174,89 @@ export default function DemoWalkthrough({ isOpen, onClose }: DemoWalkthroughProp
 
       case "dashboard":
         return (
-          <div className="bg-gray-50 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-xl font-bold text-gray-900">Welcome back, Sarah!</h2>
-                <p className="text-gray-600">Here's your financial overview</p>
+          <div className="bg-gray-50 responsive-container space-responsive-sm">
+            <div className="flex-mobile-stack gap-4">
+              <div className="space-y-1">
+                <h2 className="text-fluid-xl font-bold text-gray-900">Welcome back, Sarah!</h2>
+                <p className="text-fluid-sm text-gray-600">Here's your financial overview</p>
               </div>
-              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+              <div className="touch-target bg-blue-600 rounded-full flex items-center justify-center self-start lg:self-center">
                 <User className="w-6 h-6 text-white" />
               </div>
             </div>
             
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+            <div className="grid-responsive grid-responsive-3 gap-4 space-responsive-sm">
+              <Card className="card-responsive bg-gradient-to-r from-blue-600 to-blue-700 text-white">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm opacity-90">USD Balance</p>
-                      <p className="text-2xl font-bold">$12,847</p>
+                      <p className="text-fluid-xs opacity-90">USD Balance</p>
+                      <p className="text-fluid-xl font-bold">$12,847</p>
                     </div>
-                    <DollarSign className="w-8 h-8 opacity-80" />
+                    <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+              <Card className="card-responsive bg-gradient-to-r from-green-500 to-green-600 text-white">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm opacity-90">EUR Balance</p>
-                      <p className="text-2xl font-bold">€8,234</p>
+                      <p className="text-fluid-xs opacity-90">EUR Balance</p>
+                      <p className="text-fluid-xl font-bold">€8,234</p>
                     </div>
-                    <Globe className="w-8 h-8 opacity-80" />
+                    <Globe className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+              <Card className="card-responsive bg-gradient-to-r from-purple-500 to-purple-600 text-white">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm opacity-90">GBP Balance</p>
-                      <p className="text-2xl font-bold">£6,891</p>
+                      <p className="text-fluid-xs opacity-90">GBP Balance</p>
+                      <p className="text-fluid-xl font-bold">£6,891</p>
                     </div>
-                    <TrendingUp className="w-8 h-8 opacity-80" />
+                    <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
                   </div>
                 </CardContent>
               </Card>
             </div>
             
-            <div className="grid grid-cols-2 gap-4">
-              <Card>
+            <div className="grid-responsive grid-responsive-2 gap-4">
+              <Card className="card-responsive">
                 <CardContent className="p-4">
-                  <h3 className="font-semibold mb-3">Quick Actions</h3>
+                  <h3 className="text-fluid-base font-semibold mb-3">Quick Actions</h3>
                   <div className="space-y-2">
-                    <Button className="w-full justify-start" variant="ghost">
+                    <Button className="w-full justify-start touch-target" variant="ghost">
                       <Send className="w-4 h-4 mr-2" />
-                      Send Money
+                      <span className="text-fluid-sm">Send Money</span>
                     </Button>
-                    <Button className="w-full justify-start" variant="ghost">
+                    <Button className="w-full justify-start touch-target" variant="ghost">
                       <CreditCard className="w-4 h-4 mr-2" />
-                      Virtual Card
+                      <span className="text-fluid-sm">Virtual Card</span>
                     </Button>
-                    <Button className="w-full justify-start" variant="ghost">
+                    <Button className="w-full justify-start touch-target" variant="ghost">
                       <MessageCircle className="w-4 h-4 mr-2" />
-                      Ask Imisi
+                      <span className="text-fluid-sm">Ask Imisi</span>
                     </Button>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card>
+              <Card className="card-responsive">
                 <CardContent className="p-4">
-                  <h3 className="font-semibold mb-3">Recent Transactions</h3>
+                  <h3 className="text-fluid-base font-semibold mb-3">Recent Transactions</h3>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-fluid-xs">
                       <span>Freelance Payment</span>
                       <span className="text-green-600">+$2,500</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-fluid-xs">
                       <span>London Rent</span>
                       <span className="text-red-600">-£1,200</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-fluid-xs">
                       <span>Coffee Shop</span>
                       <span className="text-red-600">-€4.50</span>
                     </div>
@@ -592,97 +592,101 @@ export default function DemoWalkthrough({ isOpen, onClose }: DemoWalkthroughProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-          <div className="flex items-center space-x-4">
-            <img src={cushLogo} alt="Cush" className="h-8 brightness-0 invert" />
-            <div>
-              <h2 className="text-xl font-bold">Cush Platform Demo</h2>
-              <p className="text-sm opacity-90">Interactive Walkthrough</p>
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center safe-area-inset-all">
+      <div className="bg-white rounded-3xl shadow-2xl w-[calc(100vw-0.5rem)] h-[calc(100vh-0.5rem)] sm:w-[calc(100vw-2rem)] sm:h-[calc(100vh-2rem)] lg:max-w-4xl lg:max-h-[90vh] overflow-hidden gpu-accelerated">
+        {/* Mobile-First Header */}
+        <div className="nav-mobile border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+          <div className="responsive-container">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 sm:gap-4">
+                <img src={cushLogo} alt="Cush" className="h-6 sm:h-8 brightness-0 invert" />
+                <div>
+                  <h2 className="text-fluid-lg font-bold">Cush Platform Demo</h2>
+                  <p className="text-fluid-xs opacity-90 hidden sm:block">Interactive Walkthrough</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="text-white hover:bg-white/10 touch-target"
+                >
+                  {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onClose}
+                  className="text-white hover:bg-white/10 touch-target"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsPlaying(!isPlaying)}
-              className="text-white hover:bg-white/10"
-            >
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-white hover:bg-white/10"
-            >
-              <X className="w-5 h-5" />
-            </Button>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="flex">
+        {/* Mobile-First Content Layout */}
+        <div className="flex flex-col lg:flex-row h-[calc(100%-theme(spacing.16))]">
           {/* Demo Screen */}
-          <div className="flex-1">
-            <div className="h-[500px] overflow-auto">
+          <div className="flex-1 order-2 lg:order-1">
+            <div className="h-full overflow-auto smooth-scroll">
               {renderScreen()}
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="w-80 bg-gray-50 border-l p-6">
-            <div className="mb-6">
-              <h3 className="font-bold text-lg mb-2">{demoSteps[currentStep].title}</h3>
-              <p className="text-sm text-blue-600 font-medium mb-2">{demoSteps[currentStep].subtitle}</p>
-              <p className="text-sm text-gray-600">{demoSteps[currentStep].description}</p>
+          {/* Mobile-First Sidebar */}
+          <div className="w-full lg:w-80 bg-gray-50 border-t lg:border-t-0 lg:border-l order-1 lg:order-2 responsive-container space-responsive-xs">
+            <div className="space-responsive-xs">
+              <h3 className="text-fluid-lg font-bold mb-2">{demoSteps[currentStep].title}</h3>
+              <p className="text-fluid-sm text-blue-600 font-medium mb-2">{demoSteps[currentStep].subtitle}</p>
+              <p className="text-fluid-xs text-gray-600">{demoSteps[currentStep].description}</p>
             </div>
 
-            {/* Progress */}
-            <div className="mb-6">
-              <div className="flex justify-between text-sm text-gray-600 mb-2">
+            {/* Mobile-First Progress */}
+            <div className="space-responsive-xs">
+              <div className="flex justify-between text-fluid-xs text-gray-600 mb-2">
                 <span>Progress</span>
                 <span>{currentStep + 1} of {demoSteps.length}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div 
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full transition-all duration-300"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full transition-all duration-300 gpu-accelerated"
                   style={{ width: `${((currentStep + 1) / demoSteps.length) * 100}%` }}
                 ></div>
               </div>
             </div>
 
-            {/* Navigation */}
-            <div className="flex space-x-3 mb-6">
+            {/* Mobile-First Navigation */}
+            <div className="flex gap-3 space-responsive-xs">
               <Button
                 variant="outline"
                 onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
                 disabled={currentStep === 0}
-                className="flex-1"
+                className="flex-1 touch-target"
               >
                 <ChevronLeft className="w-4 h-4 mr-1" />
-                Previous
+                <span className="text-fluid-xs">Previous</span>
               </Button>
               <Button
                 onClick={() => setCurrentStep(Math.min(demoSteps.length - 1, currentStep + 1))}
                 disabled={currentStep === demoSteps.length - 1}
-                className="flex-1"
+                className="flex-1 touch-target"
               >
-                Next
+                <span className="text-fluid-xs">Next</span>
                 <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
 
-            {/* Step List */}
-            <div className="space-y-2">
+            {/* Mobile-First Step List */}
+            <div className="space-y-2 hidden lg:block">
               {demoSteps.map((step, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentStep(index)}
-                  className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
+                  className={`w-full text-left p-3 rounded-lg transition-all duration-200 touch-target ${
                     index === currentStep
                       ? 'bg-blue-100 border-2 border-blue-300 text-blue-800'
                       : index < currentStep
@@ -690,8 +694,8 @@ export default function DemoWalkthrough({ isOpen, onClose }: DemoWalkthroughProp
                       : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center text-fluid-xs font-bold ${
                       index === currentStep
                         ? 'bg-blue-600 text-white'
                         : index < currentStep
