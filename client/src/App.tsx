@@ -29,6 +29,7 @@ import CustomAuth from "@/pages/custom-auth";
 import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import OnboardingTutorial from "@/components/onboarding-tutorial";
 import FloatingImisi from "@/components/floating-imisi";
+import TopNavigation from "@/components/top-navigation";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -60,6 +61,7 @@ function Router() {
         </>
       ) : (
         <>
+          <TopNavigation />
           <Route path="/" component={Dashboard} />
           <Route path="/personalized" component={PersonalizedDashboard} />
           <Route path="/community" component={Community} />
