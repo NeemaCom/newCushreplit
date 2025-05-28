@@ -55,6 +55,8 @@ export default function CustomAuth() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
   const signUpForm = useForm<SignUpForm>({
@@ -80,19 +82,77 @@ export default function CustomAuth() {
     },
   });
 
+  // Real-time validation function
+  const validateField = (field: string, value: string) => {
+    const errors = { ...validationErrors };
+    
+    switch (field) {
+      case 'firstName':
+        if (value.length < 2) errors.firstName = 'First name must be at least 2 characters';
+        else delete errors.firstName;
+        break;
+      case 'lastName':
+        if (value.length < 2) errors.lastName = 'Last name must be at least 2 characters';
+        else delete errors.lastName;
+        break;
+      case 'email':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) errors.email = 'Please enter a valid email address';
+        else delete errors.email;
+        break;
+      case 'password':
+        if (value.length < 8) errors.password = 'Password must be at least 8 characters';
+        else delete errors.password;
+        break;
+      case 'phone':
+        const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+        if (!phoneRegex.test(value)) errors.phone = 'Please enter a valid phone number';
+        else delete errors.phone;
+        break;
+    }
+    
+    setValidationErrors(errors);
+  };
+
   const onSignUp = async (data: SignUpForm) => {
     setIsLoading(true);
+    setValidationErrors({});
+    
     try {
       await apiRequest('POST', '/api/auth/signup', data);
+      
+      // Show confetti animation
+      setShowConfetti(true);
+      
       toast({
-        title: 'Account Created Successfully!',
-        description: 'Welcome to Cush Immigration Services. You can now access your dashboard.',
+        title: '🎉 Welcome to Cush!',
+        description: 'Your account has been created successfully. Redirecting to your dashboard...',
       });
-      window.location.href = '/';
+      
+      // Hide confetti after 3 seconds and navigate
+      setTimeout(() => {
+        setShowConfetti(false);
+        window.location.href = '/';
+      }, 3000);
+      
     } catch (error: any) {
+      const errorData = error.response?.data;
+      
+      if (errorData?.errors) {
+        // Handle server validation errors with friendly tooltips
+        const serverErrors: Record<string, string> = {};
+        errorData.errors.forEach((err: string) => {
+          if (err.includes('email')) serverErrors.email = err;
+          if (err.includes('password')) serverErrors.password = err;
+          if (err.includes('phone')) serverErrors.phone = err;
+          if (err.includes('required')) serverErrors.general = 'Please fill in all required fields';
+        });
+        setValidationErrors(serverErrors);
+      }
+      
       toast({
-        title: 'Sign Up Failed',
-        description: error.message || 'An error occurred during sign up. Please try again.',
+        title: 'Account Creation Failed',
+        description: errorData?.message || error.message || 'Please check your information and try again.',
         variant: 'destructive',
       });
     } finally {
@@ -122,6 +182,7 @@ export default function CustomAuth() {
 
   return (
     <div className="min-h-screen flex">
+      <ConfettiAnimation show={showConfetti} />
       {/* Left Side - Professional Image & Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 relative overflow-hidden">
         {/* Background Pattern */}
@@ -333,8 +394,18 @@ export default function CustomAuth() {
                                 <Input
                                   {...field}
                                   placeholder="First name"
-                                  className="pl-10 h-10"
+                                  className={`pl-10 h-10 ${validationErrors.firstName ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    validateField('firstName', e.target.value);
+                                  }}
                                 />
+                                {validationErrors.firstName && (
+                                  <div className="absolute -bottom-5 left-0 text-xs text-red-500 flex items-center">
+                                    <span className="animate-pulse">⚠️</span>
+                                    <span className="ml-1">{validationErrors.firstName}</span>
+                                  </div>
+                                )}
                               </div>
                             </FormControl>
                             <FormMessage />
@@ -377,8 +448,18 @@ export default function CustomAuth() {
                                 {...field}
                                 type="email"
                                 placeholder="Enter your email"
-                                className="pl-10"
+                                className={`pl-10 h-10 ${validationErrors.email ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  validateField('email', e.target.value);
+                                }}
                               />
+                              {validationErrors.email && (
+                                <div className="absolute -bottom-5 left-0 text-xs text-red-500 flex items-center">
+                                  <span className="animate-pulse">⚠️</span>
+                                  <span className="ml-1">{validationErrors.email}</span>
+                                </div>
+                              )}
                             </div>
                           </FormControl>
                           <FormMessage />
@@ -549,7 +630,14 @@ export default function CustomAuth() {
                       className="w-full h-12 bg-green-600 hover:bg-green-700 text-white text-base font-medium rounded-lg transition-colors"
                       disabled={isLoading}
                     >
-                      {isLoading ? 'Creating Account...' : 'Create Account'}
+                      {isLoading ? (
+                        <div className="flex items-center justify-center space-x-2">
+                          <LoadingSpinner size="sm" />
+                          <span>Creating Account...</span>
+                        </div>
+                      ) : (
+                        'Create Account'
+                      )}
                     </Button>
 
                     <div className="text-center text-sm text-gray-600">
