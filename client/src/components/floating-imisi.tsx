@@ -17,6 +17,7 @@ import {
   ArrowRight,
   Star
 } from "lucide-react";
+import imisiAvatar from "@assets/vecteezy_young-afro-man_14070616-removebg-preview.png";
 
 interface ChatMessage {
   id: string;
@@ -147,14 +148,16 @@ export default function FloatingImisi() {
         <div className="fixed bottom-6 right-6 z-50">
           <Button
             onClick={() => setIsOpen(true)}
-            className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-2xl border-4 border-white transform hover:scale-110 transition-all duration-300 animate-pulse"
+            className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-2xl border-4 border-white transform hover:scale-110 transition-all duration-300 relative overflow-hidden"
+            style={{
+              animation: 'glow-ring 2s ease-in-out infinite'
+            }}
           >
-            <div className="relative">
-              <Sparkles className="w-8 h-8 text-white" />
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
-                <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
-              </div>
-            </div>
+            <img 
+              src={imisiAvatar} 
+              alt="Imisi AI Assistant" 
+              className="w-14 h-14 rounded-full object-cover"
+            />
           </Button>
           
           {/* Tooltip */}
@@ -178,6 +181,7 @@ export default function FloatingImisi() {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-10 w-10">
+                  <AvatarImage src={imisiAvatar} alt="Imisi AI" className="object-cover" />
                   <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white font-bold text-sm">
                     AI
                   </AvatarFallback>
@@ -224,16 +228,19 @@ export default function FloatingImisi() {
                   >
                     <Avatar className="h-8 w-8 flex-shrink-0">
                       {msg.isUser ? (
-                        <AvatarImage src={user?.profileImageUrl} />
+                        <>
+                          <AvatarImage src={user?.profileImageUrl} />
+                          <AvatarFallback className="bg-blue-600 text-white text-xs">
+                            {user?.firstName?.[0] || 'U'}
+                          </AvatarFallback>
+                        </>
                       ) : (
-                        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
-                          AI
-                        </AvatarFallback>
-                      )}
-                      {msg.isUser && (
-                        <AvatarFallback className="bg-blue-600 text-white text-xs">
-                          {user?.firstName?.[0] || 'U'}
-                        </AvatarFallback>
+                        <>
+                          <AvatarImage src={imisiAvatar} alt="Imisi AI" className="object-cover" />
+                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
+                            AI
+                          </AvatarFallback>
+                        </>
                       )}
                     </Avatar>
                     
@@ -295,6 +302,7 @@ export default function FloatingImisi() {
                 {isTyping && (
                   <div className="flex items-start space-x-3">
                     <Avatar className="h-8 w-8">
+                      <AvatarImage src={imisiAvatar} alt="Imisi AI" className="object-cover" />
                       <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-xs">
                         AI
                       </AvatarFallback>
