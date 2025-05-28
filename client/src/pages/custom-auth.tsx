@@ -24,7 +24,10 @@ const signUpSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   confirmPassword: z.string(),
-  phone: z.string().min(10, 'Please enter a valid phone number'),
+  phone: z.string().min(8, 'Phone number must be at least 8 digits').refine(
+    (phone) => /^\+?[\d\s\-\(\)]{8,}$/.test(phone),
+    'Please enter a valid phone number (can include country code)'
+  ),
   country: z.string().min(1, 'Please select your country'),
   acceptTerms: z.boolean().refine(val => val === true, 'You must accept the terms and conditions'),
   acceptPrivacy: z.boolean().refine(val => val === true, 'You must accept the privacy policy'),
@@ -479,9 +482,19 @@ export default function CustomAuth() {
                               <Input
                                 {...field}
                                 type="tel"
-                                placeholder="Enter your phone number"
-                                className="pl-10"
+                                placeholder="e.g. +234 901 234 5678 or 08012345678"
+                                className={`pl-10 h-10 ${validationErrors.phone ? 'border-red-300 focus:border-red-500' : 'border-gray-300 focus:border-green-500'}`}
+                                onChange={(e) => {
+                                  field.onChange(e);
+                                  validateField('phone', e.target.value);
+                                }}
                               />
+                              {validationErrors.phone && (
+                                <div className="absolute -bottom-5 left-0 text-xs text-red-500 flex items-center">
+                                  <span className="animate-pulse">⚠️</span>
+                                  <span className="ml-1">{validationErrors.phone}</span>
+                                </div>
+                              )}
                             </div>
                           </FormControl>
                           <FormMessage />

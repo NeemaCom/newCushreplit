@@ -91,8 +91,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Validate phone number format
-      const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+      // Validate phone number format (more flexible for international numbers)
+      const phoneRegex = /^\+?[\d\s\-\(\)]{8,}$/;
       if (!phoneRegex.test(userPhone)) {
         return res.status(400).json({
           success: false,
