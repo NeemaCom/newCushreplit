@@ -28,7 +28,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await setupAuth(app);
   
   // Google OAuth setup
-  setupGoogleAuth(app);
+  // setupGoogleAuth(app); // Temporarily disabled until Google OAuth credentials are added
 
   // Housing matchmaking routes
   registerHousingRoutes(app);
