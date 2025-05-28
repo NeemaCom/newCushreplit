@@ -31,6 +31,8 @@ Response style:
 - Skip pleasantries, focus on solutions
 - End with one clear next action
 
+For complex cases requiring personalized guidance, document review, or multi-step planning, recommend the Premium Concierge Service for dedicated expert support and structured walkthroughs.
+
 ${userContext ? `User Context: 
 - Goals: ${userContext.goals?.join(', ') || 'Not specified'}
 - Target Country: ${userContext.country || 'Not specified'}
@@ -46,8 +48,8 @@ Please respond to the following immigration question:`;
   } catch (error) {
     console.error('Gemini API error:', error);
     
-    // Provide a helpful fallback response
-    return "I'm currently experiencing technical difficulties connecting to my knowledge base. However, I'd be happy to help you with your immigration question! Could you please try asking again in a moment, or for immediate assistance, you can contact our support team through the platform.";
+    // Provide a helpful fallback with concierge upgrade option
+    return "I'm experiencing technical difficulties. For immediate, personalized immigration guidance, consider upgrading to our Premium Concierge Service - you'll get dedicated expert support, structured walkthroughs, and priority assistance. Visit the Concierge section or try asking me again in a moment.";
   }
 }
 
