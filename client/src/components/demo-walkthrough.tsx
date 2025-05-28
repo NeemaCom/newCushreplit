@@ -592,8 +592,8 @@ export default function DemoWalkthrough({ isOpen, onClose }: DemoWalkthroughProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center safe-area-inset-all">
-      <div className="bg-white rounded-3xl shadow-2xl w-[calc(100vw-0.5rem)] h-[calc(100vh-0.5rem)] sm:w-[calc(100vw-2rem)] sm:h-[calc(100vh-2rem)] lg:max-w-4xl lg:max-h-[90vh] overflow-hidden gpu-accelerated">
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] max-h-[700px] overflow-hidden gpu-accelerated">
         {/* Mobile-First Header */}
         <div className="nav-mobile border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <div className="responsive-container">
@@ -629,10 +629,10 @@ export default function DemoWalkthrough({ isOpen, onClose }: DemoWalkthroughProp
         </div>
 
         {/* Mobile-First Content Layout */}
-        <div className="flex flex-col lg:flex-row h-[calc(100%-theme(spacing.16))]">
+        <div className="flex flex-col lg:flex-row h-[calc(100%-4rem)]">
           {/* Demo Screen */}
           <div className="flex-1 order-2 lg:order-1">
-            <div className="h-full overflow-auto smooth-scroll">
+            <div className="h-[400px] lg:h-full overflow-auto smooth-scroll">
               {renderScreen()}
             </div>
           </div>
