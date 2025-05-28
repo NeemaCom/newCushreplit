@@ -175,7 +175,7 @@ export default function Landing() {
   }, [mentors.length]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Sophisticated Top Banner */}
       <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-700 text-white py-4 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-transparent to-purple-600/10"></div>
@@ -767,7 +767,7 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-16 px-4">
+      <footer className="bg-gray-900 text-white py-16 px-4 mt-auto">
         <div className="container mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div className="space-y-4">
