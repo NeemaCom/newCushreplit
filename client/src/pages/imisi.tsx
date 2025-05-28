@@ -355,7 +355,25 @@ export default function Imisi() {
                               : 'bg-cush-gray-100 text-cush-gray-900'
                           }`}
                         >
-                          <p className="text-sm leading-relaxed">{msg.content}</p>
+                          <div className="text-sm leading-relaxed">
+                            {msg.content.split(/(\s\/concierge\s|\s\/concierge$|Visit \/concierge)/).map((part, index) => {
+                              if (part.includes('/concierge')) {
+                                return (
+                                  <Button
+                                    key={index}
+                                    size="sm"
+                                    className="mx-1 my-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transform hover:scale-105 transition-all duration-200"
+                                    onClick={() => window.location.href = '/concierge'}
+                                  >
+                                    <Crown className="w-4 h-4 mr-2" />
+                                    Upgrade to Concierge
+                                    <ArrowRight className="w-4 h-4 ml-2" />
+                                  </Button>
+                                );
+                              }
+                              return <span key={index}>{part}</span>;
+                            })}
+                          </div>
                         </div>
                       )}
                       <p className="text-xs text-cush-gray-500 mt-1">
