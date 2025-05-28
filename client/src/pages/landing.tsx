@@ -211,21 +211,22 @@ export default function Landing() {
         </div>
       </div>
 
-      {/* Premium Header */}
-      <header className="px-4 lg:px-6 h-20 flex items-center bg-white/95 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-100 shadow-sm">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <img 
-              src={cushLogo} 
-              alt="Cush Logo" 
-              className="h-12 w-auto object-contain"
-            />
-            <div>
-              <p className="text-sm text-gray-600 font-medium">Financial solutions for expatriates and digital nomads</p>
+      {/* Mobile-First Header */}
+      <header className="nav-mobile bg-white/95 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-100 shadow-sm safe-area-inset-top">
+        <div className="responsive-container">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2">
+              <img 
+                src={cushLogo} 
+                alt="Cush Logo" 
+                className="h-8 w-auto object-contain sm:h-10 lg:h-12"
+              />
+              <div className="hidden sm:block">
+                <p className="text-fluid-xs text-gray-600 font-medium">Financial solutions for expatriates</p>
+              </div>
             </div>
-          </div>
-          
-          <nav className="hidden lg:flex items-center space-x-8">
+            
+            <nav className="hidden lg:flex items-center space-x-6">
             <a href="#services" className="text-gray-700 hover:text-blue-600 transition-all duration-300 font-medium relative group">
               Services
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
@@ -244,29 +245,30 @@ export default function Landing() {
             </a>
           </nav>
 
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" asChild className="hidden md:flex font-medium">
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" asChild className="touch-button hidden sm:flex text-fluid-sm">
               <a href="/api/login">Sign In</a>
             </Button>
             <Button 
               asChild 
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 font-medium"
+              className="touch-button bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 text-fluid-sm"
             >
               <a href="/api/login">Start Your Journey</a>
             </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden">
+      {/* Mobile-First Hero Section */}
+      <section className="space-responsive-lg bg-gradient-to-br from-blue-50 via-white to-indigo-50 relative overflow-hidden safe-area-inset-top">
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 left-4 w-32 h-32 sm:top-20 sm:left-10 sm:w-72 sm:h-72 bg-blue-200/30 rounded-full blur-2xl sm:blur-3xl"></div>
+          <div className="absolute bottom-10 right-4 w-40 h-40 sm:bottom-20 sm:right-10 sm:w-96 sm:h-96 bg-purple-200/20 rounded-full blur-2xl sm:blur-3xl"></div>
         </div>
         
-        <div className="container mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+        <div className="responsive-container relative z-10">
+          <div className="flex-mobile-stack text-center lg:text-left lg:items-center">
             <div className="space-y-8">
               <div className="space-y-4">
                 <Badge className="bg-green-100 text-green-700 border-green-200 px-4 py-2 text-sm font-medium">
