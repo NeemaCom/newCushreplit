@@ -247,13 +247,13 @@ export default function Landing() {
 
           <div className="flex items-center gap-2">
             <Button variant="ghost" asChild className="touch-button hidden sm:flex text-fluid-sm">
-              <a href="/api/login">Sign In</a>
+              <a href="/auth">Sign In</a>
             </Button>
             <Button 
               asChild 
               className="touch-button bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all duration-300 text-fluid-sm"
             >
-              <a href="/api/login">Start Your Journey</a>
+              <a href="/auth">Start Your Journey</a>
             </Button>
             </div>
           </div>
