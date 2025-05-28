@@ -17,6 +17,8 @@ import cushLogo from '@assets/Logo + Typeface_PNG (4).png';
 import professionalImage from '@assets/vecteezy_young-afro-man_14070616-removebg-preview.png';
 import LoadingSpinner from '@/components/loading-spinner';
 import ConfettiAnimation from '@/components/confetti-animation';
+import PasswordStrengthMeter from '@/components/password-strength-meter';
+import SmartAutofill from '@/components/smart-autofill';
 
 const signUpSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -59,6 +61,10 @@ export default function CustomAuth() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [isRecovering, setIsRecovering] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
@@ -115,6 +121,41 @@ export default function CustomAuth() {
     }
     
     setValidationErrors(errors);
+  };
+
+  const handlePasswordRecovery = async () => {
+    if (!recoveryEmail) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsRecovering(true);
+    try {
+      const response = await apiRequest('POST', '/api/auth/recover-password', { email: recoveryEmail });
+      const data = await response.json();
+      
+      toast({
+        title: "Password Recovery",
+        description: data.tempPassword 
+          ? `Temporary password: ${data.tempPassword}` 
+          : data.message,
+      });
+      
+      setShowPasswordRecovery(false);
+      setRecoveryEmail('');
+    } catch (error) {
+      toast({
+        title: "Recovery Failed",
+        description: "Failed to process password recovery request.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRecovering(false);
+    }
   };
 
   const onSignUp = async (data: SignUpForm) => {
