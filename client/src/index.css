@@ -119,13 +119,42 @@
     background-color: hsl(var(--cush-primary));
   }
   
-  /* Smooth glow ring animation for chat head */
+  /* Enhanced continuous glow ring animation for chat head */
   @keyframes glow-ring {
-    0%, 100% { 
-      box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(147, 51, 234, 0.3);
+    0% { 
+      box-shadow: 
+        0 0 0 0 rgba(59, 130, 246, 0.8),
+        0 0 20px rgba(59, 130, 246, 0.6),
+        0 0 40px rgba(147, 51, 234, 0.4);
+      transform: scale(1);
+    }
+    25% {
+      box-shadow: 
+        0 0 0 10px rgba(147, 51, 234, 0.6),
+        0 0 30px rgba(147, 51, 234, 0.8),
+        0 0 60px rgba(59, 130, 246, 0.5);
+      transform: scale(1.02);
     }
     50% { 
-      box-shadow: 0 0 30px rgba(59, 130, 246, 0.8), 0 0 60px rgba(147, 51, 234, 0.6);
+      box-shadow: 
+        0 0 0 8px rgba(236, 72, 153, 0.7),
+        0 0 35px rgba(236, 72, 153, 0.8),
+        0 0 70px rgba(147, 51, 234, 0.6);
+      transform: scale(1.05);
+    }
+    75% {
+      box-shadow: 
+        0 0 0 12px rgba(147, 51, 234, 0.6),
+        0 0 25px rgba(59, 130, 246, 0.8),
+        0 0 50px rgba(236, 72, 153, 0.5);
+      transform: scale(1.02);
+    }
+    100% { 
+      box-shadow: 
+        0 0 0 0 rgba(59, 130, 246, 0.8),
+        0 0 20px rgba(59, 130, 246, 0.6),
+        0 0 40px rgba(147, 51, 234, 0.4);
+      transform: scale(1);
     }
   }
   
