@@ -14,7 +14,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import cushLogo from '@assets/Logo + Typeface_PNG (4).png';
-import professionalImage from '@assets/vecteezy_young-afro-man_14070616-removebg-preview.png';
+import professionalImage from '@assets/lady smiling.jpg';
 import LoadingSpinner from '@/components/loading-spinner';
 import ConfettiAnimation from '@/components/confetti-animation';
 import PasswordStrengthMeter from '@/components/password-strength-meter';
@@ -243,8 +243,8 @@ export default function CustomAuth() {
           <div className="mb-8">
             <img 
               src={professionalImage} 
-              alt="Young African Professional" 
-              className="w-80 h-80 object-cover rounded-full shadow-2xl mx-auto mb-6"
+              alt="Professional woman with phone" 
+              className="w-80 h-80 object-cover rounded-2xl shadow-2xl mx-auto mb-6"
             />
           </div>
           
