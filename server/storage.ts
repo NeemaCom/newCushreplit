@@ -71,6 +71,11 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   
+  // Custom authentication operations
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(userData: any): Promise<User>;
+  deleteUserByEmail?(email: string): Promise<void>;
+  
   // Wallet operations
   getUserWallets(userId: string): Promise<Wallet[]>;
   getWalletByCurrency(userId: string, currency: string): Promise<Wallet | undefined>;
@@ -195,6 +200,31 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(userData: any): Promise<User> {
+    // Generate a unique ID for the user
+    const userId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    
+    const [user] = await db
+      .insert(users)
+      .values({
+        id: userId,
+        ...userData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    return user;
+  }
+
+  async deleteUserByEmail(email: string): Promise<void> {
+    await db.delete(users).where(eq(users.email, email));
   }
 
   // MFA operations

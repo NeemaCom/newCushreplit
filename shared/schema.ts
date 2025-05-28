@@ -32,6 +32,13 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  password: varchar("password"), // For custom authentication
+  phoneNumber: varchar("phone_number"),
+  nationality: varchar("nationality"),
+  isEmailVerified: boolean("is_email_verified").default(false),
+  isPhoneVerified: boolean("is_phone_verified").default(false),
+  acceptTerms: boolean("accept_terms").default(false),
+  acceptPrivacy: boolean("accept_privacy").default(false),
   role: varchar("role").default("USER").notNull(),
   mfaEnabled: boolean("mfa_enabled").default(false),
   totpSecret: varchar("totp_secret"),

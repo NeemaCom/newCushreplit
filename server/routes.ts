@@ -30,8 +30,248 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Housing matchmaking routes
   registerHousingRoutes(app);
 
+  // Custom Authentication Routes for the new auth design
+  app.post('/api/auth/signup', authRateLimit, async (req, res) => {
+    try {
+      const { firstName, lastName, email, password, phoneNumber, country, acceptTerms, acceptPrivacy } = req.body;
+
+      // Validate required fields
+      if (!firstName || !lastName || !email || !password || !phoneNumber || !country) {
+        return res.status(400).json({
+          success: false,
+          errors: ['All fields are required']
+        });
+      }
+
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({
+          success: false,
+          errors: ['Invalid email format']
+        });
+      }
+
+      // Validate password strength
+      if (password.length < 8) {
+        return res.status(400).json({
+          success: false,
+          errors: ['Password must be at least 8 characters']
+        });
+      }
+
+      // Validate phone number format
+      const phoneRegex = /^\+?[\d\s\-\(\)]{10,}$/;
+      if (!phoneRegex.test(phoneNumber)) {
+        return res.status(400).json({
+          success: false,
+          errors: ['Invalid phone number format']
+        });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail?.(email);
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: 'User with this email already exists'
+        });
+      }
+
+      // Hash password
+      const hashedPassword = EncryptionService.hashPassword(password);
+
+      // Create user with enhanced profile
+      const userData = {
+        email: email.toLowerCase(),
+        firstName: sanitizeInput(firstName),
+        lastName: sanitizeInput(lastName),
+        password: hashedPassword,
+        phoneNumber: sanitizeInput(phoneNumber),
+        nationality: sanitizeInput(country),
+        isEmailVerified: false,
+        isPhoneVerified: false,
+        acceptTerms: true,
+        acceptPrivacy: true
+      };
+
+      const newUser = await storage.createUser(userData);
+
+      // Create session for auto sign-in after registration
+      (req as any).session.userId = newUser.id;
+      (req as any).session.email = newUser.email;
+
+      // Initialize user wallets
+      await storage.createWallet({
+        userId: newUser.id,
+        currency: 'NGN',
+        balance: '0.00'
+      });
+      
+      await storage.createWallet({
+        userId: newUser.id,
+        currency: 'GBP',
+        balance: '0.00'
+      });
+
+      // Log successful registration
+      securityLogger.logSecurityEvent('USER_REGISTERED', {
+        userId: newUser.id,
+        email: newUser.email,
+        ip: req.ip
+      }, 'low');
+
+      // Return user without password
+      const { password: _, ...userResponse } = newUser;
+      res.status(201).json({
+        success: true,
+        message: 'Account created successfully',
+        user: userResponse
+      });
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  });
+
+  app.post('/api/auth/signin', authRateLimit, async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      // Validate required fields
+      if (!email || !password) {
+        return res.status(400).json({
+          success: false,
+          errors: ['Email and password are required']
+        });
+      }
+
+      // Find user by email
+      const user = await storage.getUserByEmail?.(email.toLowerCase());
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
+
+      // Verify password
+      const isValidPassword = EncryptionService.verifyPassword(password, user.password);
+      if (!isValidPassword) {
+        securityLogger.logFailedAuth(
+          req.ip || 'unknown',
+          req.get('User-Agent') || 'unknown',
+          'Invalid password attempt'
+        );
+        
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
+
+      // Create session
+      (req as any).session.userId = user.id;
+      (req as any).session.email = user.email;
+
+      // Log successful sign in
+      securityLogger.logSecurityEvent('USER_SIGNIN', {
+        userId: user.id,
+        email: user.email,
+        ip: req.ip
+      }, 'low');
+
+      // Return user without password
+      const { password: _, ...userResponse } = user;
+      res.json({
+        success: true,
+        message: 'User signed in successfully',
+        user: userResponse
+      });
+
+    } catch (error) {
+      console.error('Sign in error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  });
+
+  app.post('/api/auth/signout', (req, res) => {
+    if ((req as any).session) {
+      const userId = (req as any).session.userId;
+      (req as any).session.destroy((err: any) => {
+        if (err) {
+          console.error('Session destruction error:', err);
+          return res.status(500).json({
+            success: false,
+            message: 'Failed to sign out'
+          });
+        }
+
+        // Log successful sign out
+        if (userId) {
+          securityLogger.logSecurityEvent('USER_SIGNOUT', {
+            userId,
+            ip: req.ip
+          }, 'low');
+        }
+
+        res.json({
+          success: true,
+          message: 'Signed out successfully'
+        });
+      });
+    } else {
+      res.json({
+        success: true,
+        message: 'Already signed out'
+      });
+    }
+  });
+
+  // Custom authentication middleware
+  const requireCustomAuth = (req: any, res: any, next: any) => {
+    if (!req.session?.userId) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    next();
+  };
+
+  // Updated auth route that supports both custom and OAuth
+  app.get('/api/auth/user', authRateLimit, async (req: any, res) => {
+    try {
+      let user;
+      
+      // Check for custom session first
+      if (req.session?.userId) {
+        user = await storage.getUser(req.session.userId);
+      } 
+      // Fallback to OAuth user
+      else if (req.user?.claims?.sub) {
+        user = await storage.getUser(req.user.claims.sub);
+      }
+      
+      if (!user) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+
+      // Return user without password
+      const { password: _, ...userResponse } = user;
+      res.json(userResponse);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Auth routes with enhanced security
-  app.get('/api/auth/user', authRateLimit, enhancedAuth, isAuthenticated, async (req: any, res) => {
+  app.get('/api/auth/replit-user', authRateLimit, enhancedAuth, isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
