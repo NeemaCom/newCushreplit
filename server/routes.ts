@@ -57,20 +57,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         country: !!country
       });
 
-      // Validate required fields
-      if (!firstName || !lastName || !email || !password || !userPhone || !country) {
-        console.log('Validation failed - missing fields');
+      // Validate required fields individually with specific messages
+      const missingFields = [];
+      if (!firstName || firstName.trim() === '') missingFields.push('First name is required');
+      if (!lastName || lastName.trim() === '') missingFields.push('Last name is required'); 
+      if (!email || email.trim() === '') missingFields.push('Email is required');
+      if (!password || password.trim() === '') missingFields.push('Password is required');
+      if (!userPhone || userPhone.trim() === '') missingFields.push('Phone number is required');
+      if (!country || country.trim() === '') missingFields.push('Country is required');
+
+      if (missingFields.length > 0) {
+        console.log('Validation failed - missing fields:', missingFields);
         return res.status(400).json({
           success: false,
-          errors: ['All fields are required'],
-          debug: {
-            firstName: !!firstName,
-            lastName: !!lastName,
-            email: !!email,
-            password: !!password,
-            userPhone: !!userPhone,
-            country: !!country
-          }
+          errors: missingFields
         });
       }
 
