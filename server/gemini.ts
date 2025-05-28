@@ -12,7 +12,7 @@ export async function getImmigrationAssistance(message: string, userContext?: {
   visaType?: string;
 }): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const systemPrompt = `You are Imisi, an expert AI immigration consultant for Cush Immigration Services. You provide accurate, helpful, and empathetic guidance on immigration matters.
 
@@ -65,7 +65,7 @@ export async function analyzeTransactionRisk(transaction: {
   recommendations: string[];
 }> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `As a financial compliance expert, analyze this transaction for risk factors:
 
