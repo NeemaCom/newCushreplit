@@ -1,0 +1,68 @@
+Here's an ideal prompt for an AI agent to effectively fix the mobile responsiveness of the Cush website, framed from the perspective of a senior FAANG engineer:
+
+---
+
+## AI Agent Prompt: Enhance & Optimize Cush's Mobile Responsiveness
+
+**Objective:** Systematically analyze, diagnose, and implement robust solutions to achieve a fully responsive and highly performant mobile experience for the entire Cush website across all relevant devices and screen sizes. The goal is to deliver a seamless, intuitive, and efficient user experience on mobile, aligning with modern web standards and Core Web Vitals.
+
+---
+
+### Problem Statement:
+
+The current Cush website exhibits deficiencies in mobile responsiveness, leading to:
+* Broken layouts and overflowing content on smaller screens.
+* Poor readability due to incorrect font scaling.
+* Difficult navigation and interaction due to improperly sized touch targets or inaccessible elements.
+* Suboptimal loading times and performance on mobile networks and devices.
+* Inconsistent user experience compared to the desktop version.
+
+### Core Requirements & Implementation Approach (FAANG Standards):
+
+1.  **Mobile-First Design Philosophy:**
+    * Re-evaluate and refactor existing CSS to primarily define styles for mobile devices, then progressively enhance for larger screens using `min-width` media queries.
+    * Ensure the presence and correct configuration of the viewport meta tag (`<meta name="viewport" content="width=device-width, initial-scale=1.0">`).
+
+2.  **Fluid Layouts & Modern CSS Techniques:**
+    * Transition fixed-width elements to fluid units (percentages, `vw`, `vh`, `rem`, `em`).
+    * Utilize CSS Flexbox and Grid judiciously for complex layouts, ensuring proper wrapping, alignment, and distribution of space on various screen sizes.
+    * Implement strategic media queries to adapt layouts at key breakpoints, not just common device sizes (e.g., content-driven breakpoints).
+
+3.  **Responsive Typography:**
+    * Implement scalable font sizes using `rem` or `em` units relative to the root font size.
+    * Utilize CSS functions like `clamp()` for flexible and constrained typography scaling where appropriate.
+    * Ensure optimal `line-height`, `letter-spacing`, and `word-spacing` for readability on small screens.
+
+4.  **Optimized Responsive Images & Media:**
+    * Implement `srcset` and `sizes` attributes for `<img>` tags to serve appropriately sized images based on screen resolution and viewport.
+    * Consider using `<picture>` elements for art direction (serving different images based on layout needs).
+    * Optimize all images (compression, lazy loading) to minimize load times on mobile.
+    * Ensure videos and other embedded media scale correctly.
+
+5.  **Touch Target & Interaction Optimization:**
+    * Ensure all interactive elements (buttons, links, form fields) have sufficient touch target size (minimum 48x48 CSS pixels) and spacing for easy interaction on mobile devices.
+    * Optimize form inputs for mobile (e.g., appropriate `type` attributes for keyboards, clear labels).
+    * Review and optimize navigation menus for mobile (e.g., hamburger menus, sticky headers, bottom navigation bars).
+
+6.  **Performance Enhancements for Mobile:**
+    * Prioritize Core Web Vitals (LCP, FID, CLS) for mobile.
+    * Identify and eliminate render-blocking resources (CSS, JS).
+    * Implement code splitting and lazy loading for non-critical assets.
+    * Minify and compress all CSS, JavaScript, and HTML.
+    * Optimize server-side rendering (SSR) or pre-rendering where beneficial for mobile performance.
+    * Leverage browser caching effectively.
+
+7.  **Accessibility (A11y) on Mobile:**
+    * Ensure semantic HTML is used.
+    * Verify proper focus management for keyboard navigation on larger screens (if relevant for PWA desktop mode) and logical tab order.
+    * Ensure sufficient color contrast.
+
+### Expected Output:
+
+1.  **Detailed Code Changes:** Specific CSS, HTML, and (if applicable) JavaScript modifications required for full responsiveness.
+2.  **Breakdown of Optimizations:** A summary of performance improvements and their expected impact on Core Web Vitals.
+3.  **Cross-Device/Browser Test Plan:** A comprehensive plan outlining specific devices, screen sizes, browsers (Chrome, Safari, Firefox on iOS/Android, Desktop responsive mode), and orientations (portrait/landscape) to test for validation.
+4.  **Before/After Visuals:** Screenshots or a brief video demonstrating the improved responsiveness across key breakpoints for critical pages.
+5.  **Lighthouse Audit Report:** A "before" and "after" Lighthouse audit report (specifically for mobile) showing significant improvements in performance, accessibility, and best practices scores.
+
+---

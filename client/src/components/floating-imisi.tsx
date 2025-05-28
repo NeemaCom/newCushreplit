@@ -170,10 +170,10 @@ export default function FloatingImisi() {
 
       {/* Floating Chat Window */}
       {isOpen && (
-        <div className={`fixed z-50 bg-white shadow-2xl border transition-all duration-300 ${
+        <div className={`fixed z-50 bg-white shadow-2xl border transition-all duration-300 gpu-accelerated ${
           isMinimized 
             ? 'bottom-4 right-4 w-80 h-16 rounded-2xl' 
-            : 'bottom-4 right-4 w-96 h-[600px] rounded-2xl max-w-[calc(100vw-1rem)] max-h-[calc(100vh-2rem)] sm:w-96 sm:h-[600px] max-sm:w-[calc(100vw-1rem)] max-sm:h-[calc(100vh-2rem)] max-sm:bottom-2 max-sm:right-2'
+            : 'bottom-4 right-4 w-[calc(100vw-2rem)] h-[calc(100vh-2rem)] rounded-2xl max-w-[400px] max-h-[600px] sm:w-96 sm:h-[600px]'
         }`}>
           
           {/* Header */}
@@ -320,20 +320,20 @@ export default function FloatingImisi() {
               </CardContent>
 
               {/* Message Input */}
-              <div className="border-t border-gray-200 p-4 rounded-b-2xl bg-gray-50">
-                <div className="flex space-x-3">
+              <div className="border-t border-gray-200 p-4 rounded-b-2xl bg-gray-50 safe-area-inset-bottom">
+                <div className="flex space-x-3 items-end">
                   <Input
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about visas, transfers, loans..."
-                    className="flex-1 border-gray-300 focus:border-blue-500 text-sm"
+                    className="flex-1 border-gray-300 focus:border-blue-500 text-fluid-sm min-h-[48px] touch-target"
                     disabled={isTyping}
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={!message.trim() || isTyping}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+                    className="touch-button bg-blue-600 hover:bg-blue-700 text-white flex-shrink-0"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
