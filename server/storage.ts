@@ -161,24 +161,21 @@ export interface IStorage {
   getReferralRevenue(): Promise<ReferralRevenue[]>;
   createReferralRevenue(revenue: InsertReferralRevenue): Promise<ReferralRevenue>;
   
-  // Concierge service operations
-  getUserConciergeSubscription(userId: string): Promise<ConciergeSubscription | undefined>;
-  createConciergeSubscription(subscription: InsertConciergeSubscription): Promise<ConciergeSubscription>;
-  updateConciergeSubscription(id: number, updates: Partial<ConciergeSubscription>): Promise<ConciergeSubscription>;
-  cancelConciergeSubscription(userId: string): Promise<ConciergeSubscription>;
+  // Concierge service operations (simplified for now)
+  getUserConciergeSubscription(userId: string): Promise<any>;
+  createConciergeSubscription(subscription: any): Promise<any>;
+  updateConciergeSubscription(id: string, updates: any): Promise<any>;
+  deleteConciergeSubscription(id: string): Promise<void>;
   
-  // Migration assistant operations
-  getAvailableMigrationAssistants(): Promise<MigrationAssistant[]>;
-  assignMigrationAssistant(subscriptionId: number, assistantId: number): Promise<ConciergeSubscription>;
-  createMigrationAssistant(assistant: InsertMigrationAssistant): Promise<MigrationAssistant>;
+  // Migration assistant operations (simplified for now)
+  createMigrationAssistant(assistant: any): Promise<any>;
   
-  // Concierge interaction operations
-  getUserConciergeInteractions(userId: string): Promise<ConciergeInteraction[]>;
-  createConciergeInteraction(interaction: InsertConciergeInteraction): Promise<ConciergeInteraction>;
-  updateConciergeInteraction(id: number, updates: Partial<ConciergeInteraction>): Promise<ConciergeInteraction>;
+  // Concierge interaction operations (simplified for now)  
+  logConciergeInteraction(interaction: any): Promise<any>;
+  getConciergeInteractions(userId: string): Promise<any[]>;
   
-  // Audit log operations
-  createConciergeAuditLog(log: InsertConciergeAudit): Promise<ConciergeAuditLog>;
+  // Audit log operations (simplified for now)
+  createConciergeAuditLog(log: any): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -680,12 +677,9 @@ export class DatabaseStorage implements IStorage {
     return null;
   }
 
-  async createConciergeSubscription(subscription: InsertConciergeSubscription): Promise<ConciergeSubscription> {
-    const [newSubscription] = await db
-      .insert(conciergeSubscriptions)
-      .values(subscription)
-      .returning();
-    return newSubscription;
+  async createConciergeSubscription(subscription: any): Promise<any> {
+    // Simplified for now - will implement full concierge feature later
+    return null;
   }
 
   async updateConciergeSubscription(id: number, updates: Partial<ConciergeSubscription>): Promise<ConciergeSubscription> {
