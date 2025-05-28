@@ -592,8 +592,8 @@ export default function DemoWalkthrough({ isOpen, onClose }: DemoWalkthroughProp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[85vh] max-h-[700px] overflow-hidden gpu-accelerated">
+    <div className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl h-[60vh] max-h-[450px] overflow-hidden gpu-accelerated">
         {/* Mobile-First Header */}
         <div className="nav-mobile border-b bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
           <div className="responsive-container">
@@ -628,55 +628,57 @@ export default function DemoWalkthrough({ isOpen, onClose }: DemoWalkthroughProp
           </div>
         </div>
 
-        {/* Mobile-First Content Layout */}
-        <div className="flex flex-col lg:flex-row h-[calc(100%-4rem)]">
+        {/* Compact Content Layout */}
+        <div className="flex flex-col lg:flex-row h-[calc(100%-3rem)]">
           {/* Demo Screen */}
           <div className="flex-1 order-2 lg:order-1">
-            <div className="h-[400px] lg:h-full overflow-auto smooth-scroll">
+            <div className="h-[250px] lg:h-full overflow-auto smooth-scroll">
               {renderScreen()}
             </div>
           </div>
 
-          {/* Mobile-First Sidebar */}
-          <div className="w-full lg:w-80 bg-gray-50 border-t lg:border-t-0 lg:border-l order-1 lg:order-2 responsive-container space-responsive-xs">
-            <div className="space-responsive-xs">
-              <h3 className="text-fluid-lg font-bold mb-2">{demoSteps[currentStep].title}</h3>
-              <p className="text-fluid-sm text-blue-600 font-medium mb-2">{demoSteps[currentStep].subtitle}</p>
-              <p className="text-fluid-xs text-gray-600">{demoSteps[currentStep].description}</p>
+          {/* Compact Sidebar */}
+          <div className="w-full lg:w-64 bg-gray-50 border-t lg:border-t-0 lg:border-l order-1 lg:order-2 p-3">
+            <div className="mb-3">
+              <h3 className="text-sm font-bold mb-1">{demoSteps[currentStep].title}</h3>
+              <p className="text-xs text-blue-600 font-medium mb-1">{demoSteps[currentStep].subtitle}</p>
+              <p className="text-xs text-gray-600 leading-tight">{demoSteps[currentStep].description}</p>
             </div>
 
-            {/* Mobile-First Progress */}
-            <div className="space-responsive-xs">
-              <div className="flex justify-between text-fluid-xs text-gray-600 mb-2">
+            {/* Compact Progress */}
+            <div className="mb-3">
+              <div className="flex justify-between text-xs text-gray-600 mb-1">
                 <span>Progress</span>
-                <span>{currentStep + 1} of {demoSteps.length}</span>
+                <span>{currentStep + 1}/{demoSteps.length}</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
+              <div className="w-full bg-gray-200 rounded-full h-1.5">
                 <div 
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 h-2 rounded-full transition-all duration-300 gpu-accelerated"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 h-1.5 rounded-full transition-all duration-300 gpu-accelerated"
                   style={{ width: `${((currentStep + 1) / demoSteps.length) * 100}%` }}
                 ></div>
               </div>
             </div>
 
-            {/* Mobile-First Navigation */}
-            <div className="flex gap-3 space-responsive-xs">
+            {/* Compact Navigation */}
+            <div className="flex gap-2">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
                 disabled={currentStep === 0}
-                className="flex-1 touch-target"
+                className="flex-1 text-xs"
               >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                <span className="text-fluid-xs">Previous</span>
+                <ChevronLeft className="w-3 h-3 mr-1" />
+                Prev
               </Button>
               <Button
+                size="sm"
                 onClick={() => setCurrentStep(Math.min(demoSteps.length - 1, currentStep + 1))}
                 disabled={currentStep === demoSteps.length - 1}
-                className="flex-1 touch-target"
+                className="flex-1 text-xs"
               >
-                <span className="text-fluid-xs">Next</span>
-                <ChevronRight className="w-4 h-4 ml-1" />
+                Next
+                <ChevronRight className="w-3 h-3 ml-1" />
               </Button>
             </div>
 
