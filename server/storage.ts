@@ -675,14 +675,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Concierge service operations
-  async getUserConciergeSubscription(userId: string): Promise<ConciergeSubscription | undefined> {
-    const [subscription] = await db
-      .select()
-      .from(conciergeSubscriptions)
-      .where(eq(conciergeSubscriptions.userId, userId))
-      .orderBy(desc(conciergeSubscriptions.createdAt))
-      .limit(1);
-    return subscription;
+  async getUserConciergeSubscription(userId: string): Promise<any | undefined> {
+    // Return null for now since concierge feature is not yet fully implemented
+    return null;
   }
 
   async createConciergeSubscription(subscription: InsertConciergeSubscription): Promise<ConciergeSubscription> {
