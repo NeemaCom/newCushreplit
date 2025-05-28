@@ -1,4 +1,6 @@
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/components/header";
 import QuickStats from "@/components/quick-stats";
 import TransferForm from "@/components/transfer-form";
@@ -6,14 +8,46 @@ import TransactionList from "@/components/transaction-list";
 import ImmigrationServices from "@/components/immigration-services";
 import AIAssistant from "@/components/ai-assistant";
 import ChatbotWidget from "@/components/chatbot-widget";
+import PersonalizedWelcomeScreen from "@/components/personalized-welcome-screen";
+import AchievementSystem from "@/components/achievement-system";
+import ContextualHelpBubbles from "@/components/contextual-help-bubbles";
+import EmojiMoodTracker from "@/components/emoji-mood-tracker";
+import OnboardingTour from "@/components/onboarding-tour";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [activeView, setActiveView] = useState('dashboard');
   
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: ["/api/dashboard"],
   });
+
+  // Check if user is new and should see welcome screen
+  useEffect(() => {
+    const hasSeenWelcome = localStorage.getItem(`welcomeSeen_${user?.id}`);
+    const isNewUser = user && !hasSeenWelcome;
+    
+    if (isNewUser) {
+      setShowWelcomeScreen(true);
+    }
+  }, [user?.id]);
+
+  const handleWelcomeComplete = () => {
+    localStorage.setItem(`welcomeSeen_${user?.id}`, 'true');
+    setShowWelcomeScreen(false);
+    setShowOnboarding(true);
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+  };
+
+  const handleOnboardingSkip = () => {
+    setShowOnboarding(false);
+  };
 
   if (isLoading) {
     return (
@@ -127,6 +161,89 @@ export default function Dashboard() {
       </main>
 
       <ChatbotWidget />
+      
+      {/* ✨ MAGICAL UX FEATURES ✨ */}
+      
+      {/* Personalized Welcome Screen for New Users */}
+      <AnimatePresence>
+        {showWelcomeScreen && user && (
+          <PersonalizedWelcomeScreen
+            user={{
+              firstName: user.firstName || '',
+              lastName: user.lastName || '',
+              email: user.email || '',
+              profileImageUrl: user.profileImageUrl || ''
+            }}
+            onContinue={handleWelcomeComplete}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Playful Onboarding Tour with Animated Character Guide */}
+      <AnimatePresence>
+        {showOnboarding && (
+          <OnboardingTour
+            onComplete={handleOnboardingComplete}
+            onSkip={handleOnboardingSkip}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Contextual Help Bubbles with Witty Micro-copy */}
+      <ContextualHelpBubbles 
+        currentPage="dashboard"
+        userLevel={1}
+      />
+
+      {/* Emoji-Based Mood Tracker */}
+      <EmojiMoodTracker
+        onMoodChange={(mood) => {
+          console.log('User mood updated:', mood);
+          // You can use this data for analytics or personalization
+        }}
+      />
+
+      {/* Hidden Achievement System Panel */}
+      {activeView === 'achievements' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          className="fixed inset-0 bg-black/50 z-50 p-4 overflow-y-auto"
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="bg-white rounded-2xl shadow-2xl p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Your Achievements 🏆</h2>
+                <button
+                  onClick={() => setActiveView('dashboard')}
+                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                >
+                  ✕
+                </button>
+              </div>
+              <AchievementSystem
+                userId={user?.id || 'guest'}
+                onAchievementUnlock={(achievement) => {
+                  console.log('Achievement unlocked!', achievement);
+                }}
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Floating Achievement Access Button */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ delay: 2, type: "spring" }}
+        onClick={() => setActiveView('achievements')}
+        className="fixed bottom-6 left-6 w-14 h-14 bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-full shadow-lg hover:scale-110 transition-transform z-40 flex items-center justify-center"
+        title="View Your Achievements"
+      >
+        🏆
+      </motion.button>
     </div>
   );
 }
