@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import cushLogo from '@assets/Logo + Typeface_PNG (4).png';
 import ladySmilingImage from '@assets/lady smiling.jpg';
-import guySmilingImage from '@assets/guy smiling.jpg';
+import guySmilingImage from '@assets/guy smiling2.jpg';
 import LoadingSpinner from '@/components/loading-spinner';
 import ConfettiAnimation from '@/components/confetti-animation';
 import PasswordStrengthMeter from '@/components/password-strength-meter';
