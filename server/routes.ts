@@ -11,7 +11,7 @@ import {
   EncryptionService,
   enhancedAuth
 } from "./security";
-import { getImmigrationAssistance, analyzeTransactionRisk } from "./openai";
+import { getImmigrationAssistance, analyzeTransactionRisk } from "./gemini";
 import { transferSchema, flightSearchSchema } from "@shared/schema";
 import { z } from "zod";
 import Stripe from "stripe";
