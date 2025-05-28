@@ -122,6 +122,7 @@ export default function CustomAuth() {
     setValidationErrors({});
     
     try {
+      console.log('Sending signup data:', data);
       await apiRequest('POST', '/api/auth/signup', data);
       
       // Show confetti animation
