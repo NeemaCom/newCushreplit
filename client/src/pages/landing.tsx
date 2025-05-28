@@ -813,7 +813,7 @@ export default function Landing() {
             </div>
           </div>
           
-          <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
+          <div className="border-t border-gray-800 pt-8 pb-4 text-center text-gray-400">
             <p>&copy; 2024 Cush Global Immigration. All rights reserved.</p>
           </div>
         </div>

@@ -174,10 +174,14 @@ export default function CustomAuth() {
         description: 'Your account has been created successfully. Redirecting to your dashboard...',
       });
       
-      // Hide confetti after 3 seconds and navigate
+      // Hide confetti after 3 seconds and redirect to sign-in
       setTimeout(() => {
         setShowConfetti(false);
-        window.location.href = '/';
+        setActiveTab('signin');
+        toast({
+          title: 'Please Sign In',
+          description: 'Now please sign in with your new account credentials.',
+        });
       }, 3000);
       
     } catch (error: any) {
@@ -329,10 +333,16 @@ export default function CustomAuth() {
             {/* Tab Navigation */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-white shadow-sm border">
-                <TabsTrigger value="signin" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+                <TabsTrigger 
+                  value="signin" 
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white hover:bg-blue-50 transition-all duration-200 py-3 px-6 text-base font-medium"
+                >
                   Sign In
                 </TabsTrigger>
-                <TabsTrigger value="signup" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+                <TabsTrigger 
+                  value="signup" 
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white hover:bg-blue-50 transition-all duration-200 py-3 px-6 text-base font-medium"
+                >
                   Sign Up
                 </TabsTrigger>
               </TabsList>
