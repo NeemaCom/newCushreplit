@@ -174,90 +174,90 @@ export default function DemoWalkthrough({ isOpen, onClose }: DemoWalkthroughProp
 
       case "dashboard":
         return (
-          <div className="bg-gray-50 responsive-container space-responsive-sm">
-            <div className="flex-mobile-stack gap-4">
-              <div className="space-y-1">
-                <h2 className="text-fluid-xl font-bold text-gray-900">Welcome back, Sarah!</h2>
-                <p className="text-fluid-sm text-gray-600">Here's your financial overview</p>
+          <div className="bg-gray-50 p-3 text-xs">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h2 className="text-sm font-bold text-gray-900">Welcome back, Sarah!</h2>
+                <p className="text-xs text-gray-600">Financial overview</p>
               </div>
-              <div className="touch-target bg-blue-600 rounded-full flex items-center justify-center self-start lg:self-center">
-                <User className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-white" />
               </div>
             </div>
             
-            <div className="grid-responsive grid-responsive-3 gap-4 space-responsive-sm">
-              <Card className="card-responsive bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                <CardContent className="p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3">
+              <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                <CardContent className="p-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-fluid-xs opacity-90">USD Balance</p>
-                      <p className="text-fluid-xl font-bold">$12,847</p>
+                      <p className="text-xs opacity-90">USD</p>
+                      <p className="text-sm font-bold">$12,847</p>
                     </div>
-                    <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+                    <DollarSign className="w-4 h-4 opacity-80" />
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="card-responsive bg-gradient-to-r from-green-500 to-green-600 text-white">
-                <CardContent className="p-4">
+              <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+                <CardContent className="p-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-fluid-xs opacity-90">EUR Balance</p>
-                      <p className="text-fluid-xl font-bold">€8,234</p>
+                      <p className="text-xs opacity-90">EUR</p>
+                      <p className="text-sm font-bold">€8,234</p>
                     </div>
-                    <Globe className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+                    <Globe className="w-4 h-4 opacity-80" />
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="card-responsive bg-gradient-to-r from-purple-500 to-purple-600 text-white">
-                <CardContent className="p-4">
+              <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+                <CardContent className="p-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-fluid-xs opacity-90">GBP Balance</p>
-                      <p className="text-fluid-xl font-bold">£6,891</p>
+                      <p className="text-xs opacity-90">GBP</p>
+                      <p className="text-sm font-bold">£6,891</p>
                     </div>
-                    <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 opacity-80" />
+                    <TrendingUp className="w-4 h-4 opacity-80" />
                   </div>
                 </CardContent>
               </Card>
             </div>
             
-            <div className="grid-responsive grid-responsive-2 gap-4">
-              <Card className="card-responsive">
-                <CardContent className="p-4">
-                  <h3 className="text-fluid-base font-semibold mb-3">Quick Actions</h3>
-                  <div className="space-y-2">
-                    <Button className="w-full justify-start touch-target" variant="ghost">
-                      <Send className="w-4 h-4 mr-2" />
-                      <span className="text-fluid-sm">Send Money</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <Card>
+                <CardContent className="p-2">
+                  <h3 className="text-xs font-semibold mb-2">Quick Actions</h3>
+                  <div className="space-y-1">
+                    <Button className="w-full justify-start text-xs py-1 h-auto" variant="ghost">
+                      <Send className="w-3 h-3 mr-1" />
+                      Send Money
                     </Button>
-                    <Button className="w-full justify-start touch-target" variant="ghost">
-                      <CreditCard className="w-4 h-4 mr-2" />
-                      <span className="text-fluid-sm">Virtual Card</span>
+                    <Button className="w-full justify-start text-xs py-1 h-auto" variant="ghost">
+                      <CreditCard className="w-3 h-3 mr-1" />
+                      Virtual Card
                     </Button>
-                    <Button className="w-full justify-start touch-target" variant="ghost">
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      <span className="text-fluid-sm">Ask Imisi</span>
+                    <Button className="w-full justify-start text-xs py-1 h-auto" variant="ghost">
+                      <MessageCircle className="w-3 h-3 mr-1" />
+                      Ask Imisi
                     </Button>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="card-responsive">
-                <CardContent className="p-4">
-                  <h3 className="text-fluid-base font-semibold mb-3">Recent Transactions</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-fluid-xs">
-                      <span>Freelance Payment</span>
+              <Card>
+                <CardContent className="p-2">
+                  <h3 className="text-xs font-semibold mb-2">Transactions</h3>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span>Freelance</span>
                       <span className="text-green-600">+$2,500</span>
                     </div>
-                    <div className="flex justify-between text-fluid-xs">
-                      <span>London Rent</span>
+                    <div className="flex justify-between text-xs">
+                      <span>Rent</span>
                       <span className="text-red-600">-£1,200</span>
                     </div>
-                    <div className="flex justify-between text-fluid-xs">
-                      <span>Coffee Shop</span>
+                    <div className="flex justify-between text-xs">
+                      <span>Coffee</span>
                       <span className="text-red-600">-€4.50</span>
                     </div>
                   </div>
