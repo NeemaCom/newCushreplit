@@ -41,14 +41,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Custom Authentication Routes for the new auth design
   app.post('/api/auth/signup', authRateLimit, async (req, res) => {
     try {
+      console.log('Sign-up request body:', JSON.stringify(req.body, null, 2));
+      
       const { firstName, lastName, email, password, phone, phoneNumber, country, acceptTerms, acceptPrivacy } = req.body;
       const userPhone = phone || phoneNumber; // Handle both field names
 
+      console.log('Extracted fields:', {
+        firstName: !!firstName,
+        lastName: !!lastName, 
+        email: !!email,
+        password: !!password,
+        phone: !!phone,
+        phoneNumber: !!phoneNumber,
+        userPhone: !!userPhone,
+        country: !!country
+      });
+
       // Validate required fields
       if (!firstName || !lastName || !email || !password || !userPhone || !country) {
+        console.log('Validation failed - missing fields');
         return res.status(400).json({
           success: false,
-          errors: ['All fields are required']
+          errors: ['All fields are required'],
+          debug: {
+            firstName: !!firstName,
+            lastName: !!lastName,
+            email: !!email,
+            password: !!password,
+            userPhone: !!userPhone,
+            country: !!country
+          }
         });
       }
 
