@@ -215,7 +215,7 @@ export default function FloatingImisi() {
             </div>
           </CardHeader>
 
-          {/* Messages - Only show when not minimized */}
+          {/* Messages and Input - Only show when not minimized */}
           {!isMinimized && (
             <>
               <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 md:h-[400px] max-md:h-[calc(100vh-180px)] scrollbar-thin scrollbar-thumb-gray-300">
@@ -274,16 +274,17 @@ export default function FloatingImisi() {
                             {msg.content.split(/(\s\/concierge\s|\s\/concierge$|Visit \/concierge)/).map((part, index) => {
                               if (part.includes('/concierge')) {
                                 return (
-                                  <Button
-                                    key={index}
-                                    size="sm"
-                                    className="mx-1 my-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transform hover:scale-105 transition-all duration-200 text-xs"
-                                    onClick={() => window.location.href = '/concierge'}
-                                  >
-                                    <Crown className="w-3 h-3 mr-1" />
-                                    Upgrade
-                                    <ArrowRight className="w-3 h-3 ml-1" />
-                                  </Button>
+                                  <span key={index} className="inline-block mx-1 my-1">
+                                    <Button
+                                      size="sm"
+                                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg transform hover:scale-105 transition-all duration-200 text-xs"
+                                      onClick={() => window.location.href = '/concierge'}
+                                    >
+                                      <Crown className="w-3 h-3 mr-1" />
+                                      Upgrade
+                                      <ArrowRight className="w-3 h-3 ml-1" />
+                                    </Button>
+                                  </span>
                                 );
                               }
                               return <span key={index}>{part}</span>;
