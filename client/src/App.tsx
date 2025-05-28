@@ -27,6 +27,7 @@ import HomeBase from "@/pages/homebase";
 import PersonalizedDashboard from "@/pages/personalized-dashboard";
 import PWAInstallPrompt from "@/components/pwa-install-prompt";
 import OnboardingTutorial from "@/components/onboarding-tutorial";
+import FloatingImisi from "@/components/floating-imisi";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -89,6 +90,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
+        <FloatingImisi />
         <PWAInstallPrompt />
         <OnboardingTutorial />
       </TooltipProvider>
